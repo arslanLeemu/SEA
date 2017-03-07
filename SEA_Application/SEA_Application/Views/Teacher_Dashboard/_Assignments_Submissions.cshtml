@@ -1,0 +1,116 @@
+﻿@model IEnumerable<SEA_Application.Models.Student_Assignment>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("SubjectsByClass")',
+                { id: selectedClass }, function (data) {
+
+                    //alert(JSON.stringify(data));
+                    $('#subjects').html('');
+                    $('#subjects').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+        $("#subjects").click(function () {
+            var selectedSubject = $("#subjects").val();
+            $.get('@Url.Action("AssignmentsBySubject", "Teacher_Dashboard")',
+                { id: selectedSubject }, function (data) {
+
+                    $('#assignment').html('');
+                    $('#assignment').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#assignment').append('<option value=' + item.Id + '>' + item.Title + '</option>');
+                    });
+
+                });
+        });
+
+        $("#assignment").click(function () {
+            var selectedAssignment = $("#assignment").val();
+            $.get('@Url.Action("SubmissionByAssignment", "Teacher_Dashboard")',
+                { id: selectedAssignment }, function (data) {
+
+                    $('#submission_table').html('');
+                    
+                    $.each(data, function (i, item) {
+                        var downloadfile = "";
+                        if (item.assignmentsubmission.Status==="Submitted")
+                        {
+                            downloadfile = '<a href="/Teacher_Dashboard/Student_Assignment_Submitted_File?id=' + item.assignmentsubmission.Id + '">Download File</a>';
+                        }
+                        else
+                        {
+                            downloadfile = '-/-';
+                        }
+                        var date;
+                        
+                        if (item.assignmentsubmission.Date ==null) {
+                            date = '';
+                        }
+                        else
+                        {
+                            date = new Date(parseInt(item.assignmentsubmission.Date.replace(/(^.*\()|([+-].*$)/g, '')));
+                            date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                        
+                       
+                        $('#submission_table').append('<tr id=' + item.assignmentsubmission.Id + '><td>' + item.Name + '</td><td>' + item.assignmentsubmission.Status + '</td><td>' + item.assignmentsubmission.SubmittedFileName + '</td><td>' + downloadfile + '</td><td>' + date + '</td></tr>');
+
+                    });
+
+                });
+        });
+    });
+
+</script>
+<div class="container">
+    <form>
+        <div class="form-group">
+            <lable class="col-md-2 control-label"><b>Select Class</b></lable>
+            <div class="col-md-10">
+                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <br />
+            <label class="control-label col-md-2">Subjects</label>
+            <div class="col-md-10">
+                <select class="form-control" id="subjects" name="subjects" disabled></select>
+            </div>
+            <br />
+            <label class="control-label col-md-2">Assignment</label>
+            <div class="col-md-10">
+                <select class="form-control" id="assignment" name="assignment" disabled></select>
+            </div>
+        </div>
+    </form>
+    <br />
+    <hr />
+    <hr >
+   
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Student Name
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Submitted File Name
+                </th>
+                <th>
+                    Download File
+                </th>
+                <th>
+                    Submitted Date
+                </th>
+            </tr>
+        </thead>
+        <tbody id="submission_table"></tbody>
+    </table>
+</div>

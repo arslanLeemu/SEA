@@ -1,0 +1,104 @@
+﻿
+<!-- Chart code -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("SubjectsByClass","Teacher_Dashboard")',
+                { id: selectedClass }, function (data) {
+                    $('#SubjectID').html('');
+                    $('#SubjectID').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#SubjectID').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+        $("#SubjectID").click(function () {
+            var selectedSubject = $("#SubjectID").val();
+            $.get('@Url.Action("AssignmentsBySubject", "Teacher_Dashboard")',
+                { id: selectedSubject }, function (data) {
+
+                    $('#AssignmentID').html('');
+                    $('#AssignmentID').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#AssignmentID').append('<option value=' + item.Id + '>' + item.Title + '</option>');
+                    });
+
+                });
+        });
+        $("#AssignmentID").click(function () {
+            $('#btnAdd').prop('disabled', false);
+            $('#percentage').prop('disabled', false);
+
+        });
+        $("#btnAdd").bind("click", function () {
+            var selectedAssignment = $("#AssignmentID").val();
+            var passpercentage = $("#percentage").val();
+            $.get('@Url.Action("ReportByAssignment", "Reports")',
+               { assignment: selectedAssignment, percentage: passpercentage }, function (data) {
+                   console.log(JSON.stringify(data));
+                   var chart = AmCharts.makeChart("chartdiv", {
+                       "type": "pie",
+                       "theme": "light",
+                       "dataProvider": data,
+                       "valueField": "number",
+                       "titleField": "result",
+                       "colorField": "color",
+                       "balloon": {
+                           "fixedPosition": true,
+
+                       },
+                       "export": {
+                           "enabled": true
+                       }
+                   });
+
+               });
+
+        });
+
+    });
+
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="form-horizontal">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Subject</b></lable>
+                    <div class="col-md-8">
+                        @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Subject</b></lable>
+                    <div class="col-md-8">
+                        <select class="form-control" id="SubjectID" name="SubjectID" disabled></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Assignment</b></lable>
+                    <div class="col-md-8">
+                        <select class="form-control" id="AssignmentID" name="AssignmentID" disabled></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Passing Percentage</b></lable>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" id="percentage" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button id="btnAdd" type="button" class="btn btn-primary" disabled>Generate Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+
+        <div id="chartdiv"></div>
+    </div>
+</div>

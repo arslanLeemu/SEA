@@ -1,0 +1,245 @@
+﻿<!-- header -->
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<!-- Resources -->
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/gauge.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+<style>
+    .fill-width.dropdown > .dropdown-menu > li > a {
+        white-space: normal;
+    }
+    #partial {
+	width	: 100%;
+	height	: 500px;
+}
+</style>
+<script>
+    $(document).ready(function () {
+        $(function () {
+
+            $.get('@Url.Action("StudentAnnouncement")',
+                 function (data) {
+
+                     $('#announcement').html('');
+
+                     $('.count').html(data.length);
+                     $.each(data, function (i, item) {
+
+                         $('#announcement').append('<li><a href="AnnouncementDetail?id='+item.Id +'">'+item.Title+'</a></li>');
+
+
+                    });
+
+                 });
+           
+        });
+        $('#student_assignment').click(function () {
+            $.ajax({
+                url: "@(Url.Action("Student_Assignments", "Student_Dashboard"))",
+                type: "GET",
+
+                cache: false,
+                success: function (data) {
+                    //Fill div with results
+                    $("#partial").html(data);
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        });
+
+        $('#student_announcement').click(function () {
+            $.ajax({
+                url: "@(Url.Action("Student_Announcement", "Student_Dashboard"))",
+                type: "GET",
+
+            cache: false,
+            success: function (data) {
+                //Fill div with results
+                $("#partial").html(data);
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+        });
+        });
+        $('#student_marks').click(function () {
+            $.ajax({
+                url: "@(Url.Action("Student_Marks", "Student_Dashboard"))",
+                type: "GET",
+
+            cache: false,
+            success: function (data) {
+                //Fill div with results
+                $("#partial").html(data);
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+        $('#student_attendance').click(function () {
+            $.ajax({
+                url: "@(Url.Action("Student_Attendance", "Student_Dashboard"))",
+                type: "GET",
+
+            cache: false,
+            success: function (data) {
+                //Fill div with results
+                $("#partial").html(data);
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+        });
+        });
+
+
+       // randomValue();
+        
+    });
+
+    
+    var gaugeChart = AmCharts.makeChart("partial", {
+        "type": "gauge",
+        "theme": "light",
+        "axes": [{
+            "axisThickness": 1,
+            "axisAlpha": 0.2,
+            "tickAlpha": 0.2,
+            "valueInterval": 20,
+            "bands": [{
+               
+                "color": "#cc4748",
+                "endValue": 90,
+                "startValue": 0
+            }, {
+                "color": "#fdd400",
+                "endValue": 130,
+                "startValue": 90
+            }, {
+                "color": "#84b761",
+                "endValue": 220,
+                "innerRadius": "95%",
+                "startValue": 130
+            }],
+            "bottomText": "0 km/h",
+            "bottomTextYOffset": -20,
+            "endValue": 220
+        }],
+        "arrows": [{}],
+        "export": {
+            "enabled": true
+        }
+    });
+    setTimeout(function () { randomValue(); }, 2000);
+     //setInterval(randomValue, 2000);
+    //
+    // set random value 
+    function randomValue() {
+        
+        var value = Math.round(20);
+        if (gaugeChart) {
+            if (gaugeChart.arrows) {
+                if (gaugeChart.arrows[0]) {
+                    if (gaugeChart.arrows[0].setValue) {
+                        gaugeChart.arrows[0].setValue(value);
+                        gaugeChart.axes[0].setBottomText(value + " km/h");
+                    }
+                }
+            }
+        }
+    }
+</script>
+<div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid" style="background-color:#3276b1">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" style="color:white" href="#">Dashboard</a>
+        </div>
+        <div class="navbar-collapse collapse">
+           @Html.Partial("_LoginPartial")
+        </div>
+    </div>
+    <!-- /container -->
+</div>
+<!-- /Header -->
+<!-- Main -->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3">
+            <!-- Left column -->
+            <a href="#"><strong><i class="glyphicon glyphicon-wrench"></i> Tools</strong></a>
+
+            <hr>
+
+            <ul class="nav nav-stacked">
+                <li class="nav-header">
+                    <a href="#" data-toggle="collapse" data-target="#userMenu">Settings <i class="glyphicon glyphicon-chevron-down"></i></a>
+                    <ul class="nav nav-stacked collapse in" id="userMenu">
+
+                        <li><a href="@Url.Action("Index", "Student")"><i class="glyphicon glyphicon-user"></i> Classes</a></li>
+                        <li><a href="#"><i class="glyphicon glyphicon-user"></i> Subjects</a></li>
+                        <li><a id="student_assignment" href="#"><i class="glyphicon glyphicon-user"></i> Assignment</a></li>
+                        <li><a href="@Url.Action("Index", "Subject")"><i class="glyphicon glyphicon-user"></i> Test</a></li>
+                        <li><a id="student_announcement" href="#"><i class="glyphicon glyphicon-user"></i> Announcement</a></li>
+                        <li><a id="student_marks" href="#"><i class="glyphicon glyphicon-user"></i> Marks</a></li>
+                        <li><a id="student_attendance" href="#"><i class="glyphicon glyphicon-user"></i> Attendance</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+        <!-- /col-3 -->
+        <div class="col-sm-9">
+
+            <!-- column 2 -->
+            <ul class="list-inline pull-right">
+                <li><a href="#"><i class="glyphicon glyphicon-cog"></i></a></li>
+                <li class="dropdown fill-width">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-comment"></i><span class="count">3</span></a>
+                    <ul class="dropdown-menu" role="menu" id="announcement"></ul>
+                </li>
+            </ul>
+            <a href="#"><strong><i class="glyphicon glyphicon-dashboard"></i> My Dashboard</strong></a>
+            <hr>
+            <div id="partial">
+
+            </div>
+        </div>
+        <!--/col-span-9-->
+    </div>
+</div>
+<!-- /Main -->
+
+
+<div class="modal" id="addWidgetModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Add Widget</h4>
+            </div>
+            <div class="modal-body">
+                <p>Add a widget stuff here..</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" data-dismiss="modal" class="btn">Close</a>
+                <a href="#" class="btn btn-primary">Save changes</a>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dalog -->
+</div>
+<!-- /.modal -->

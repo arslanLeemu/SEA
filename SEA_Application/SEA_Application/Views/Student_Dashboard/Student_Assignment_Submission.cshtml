@@ -1,0 +1,96 @@
+﻿@model SEA_Application.Models.Student_Assignment
+@{
+    ViewBag.Title = "Student_Assignment_Submission";
+}
+
+<h2>Student_Assignment_Submission</h2>
+
+<div>
+    <h4>Student_Assignment</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        @using (Html.BeginForm("Student_Assignment_Submission", "Student_Dashboard", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <dt>
+                <input type="hidden" name="id" id="id" value=@Model.Id>
+            </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.FileName)
+            </dt>
+
+            <dd>
+                @Html.ActionLink(Model.AspNetAssignment.FileName, "downloadFile", new { id = Model.AspNetAssignment.Id })
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.AspNetAssignment.DueDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.AspNetAssignment.DueDate)
+            </dd>
+            <dt>
+                Topics
+            </dt>
+            <dd>
+                @foreach (var item in Model.AspNetAssignment.AspNetAssignment_Topic)
+                {
+                    @Html.DisplayFor(modelItem => item.AspNetTopic.TopicName)
+                    <span>,</span>
+                }
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Status)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Status)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.SubmittedFileName)
+            </dt>
+
+            <dd>
+                @Html.ActionLink(Model.SubmittedFileName, "downloadSubmittedFile", new { id = Model.Id })
+            </dd>
+           
+            
+            <dt>
+                @Html.DisplayNameFor(model => model.Date)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Date)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.AspNetAssignment.Description)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.AspNetAssignment.Description)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.AspNetAssignment.AspNetUser.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.AspNetAssignment.AspNetUser.Name)
+            </dd>
+
+
+            <dt>
+                File
+            </dt>
+            <dd>
+                <input id="document" name="document" type="file" />
+            </dd>
+           <br />
+           <hr />
+            <dd>
+                <input type="submit" value="Submit Assignment" class="btn btn-default" />
+            </dd>
+        }
+
+    </dl>
+</div>

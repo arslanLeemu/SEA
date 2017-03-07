@@ -1,0 +1,113 @@
+﻿
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<h2>@ViewBag.Title</h2>
+
+<div class="container">
+    
+    <form>
+       
+        <div class="form-group">
+
+            <lable class="col-md-2 control-label"><b>Select Class</b></lable>
+            <div class="col-md-10">
+                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <br />
+            <label class="control-label col-md-2">Subjects</label>
+            <div class="col-md-10">
+                <select class="form-control" id="subjects" name="subjects"></select>
+            </div>
+        </div>
+        </form>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Student Name
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Reason
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="attendance_table"></tbody>
+        </table>
+    <button type="button" id="save_attendance" class="btn btn-primary" disabled>Save</button>
+    </div>
+        <script type="text/javascript">
+            var attendance =
+                {
+                    Id: '',
+                    SubjectID:'',
+                    Status: '',
+                    Reason:''
+
+                };
+            attendances = [];
+            $(document).ready(function () {
+                $('#save_attendance').click(function () {
+                    attendances = [];
+                    $('table tbody tr').each(function () {
+                        attendance = Object.create(attendance);
+                        attendance.Id = $(this).attr('id');
+                        attendance.Status = $('#Status', this).val();
+                        attendance.Reason = $('#reason', this).val();
+                        attendance.SubjectID = $('#subjects').val();
+                        attendances.push(attendance);
+                        
+                    });
+                    stu = JSON.stringify({ 'stu': attendances });
+
+                    $.ajax({
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        type: 'POST',
+                        url: '/Teacher_Dashboard/Attendance',
+                        data: stu,
+                        success: function () {
+                            $('#partial').html('Attendance Successfully Save');
+                        },
+                        failure: function (response) {
+                            $('#partial').html('Something went wrong');
+                        }
+                    });
+                });
+
+                $("#ClassID").click(function () {
+                    var selectedClass = $("#ClassID").val();
+                    $.get('@Url.Action("SubjectsByClass")',
+                        { id: selectedClass }, function (data) {
+
+                            $('#subjects').html('');
+
+                            $.each(data, function (i, item) {
+                                $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                            });
+
+                        });
+                });
+
+                $("#subjects").click(function () {
+                    $('#save_attendance').prop('disabled', false);
+                    var selectedClass = $("#subjects").val();
+                    $.get('@Url.Action("StudentBySubject")',
+                        { id: selectedClass }, function (data) {
+                          
+                            $('#attendance_table').html('');
+
+                            $.each(data, function (i, item) {
+                               
+                                $('#attendance_table').append('<tr id=' + item.Id + '><td>' + item.Name + '</td><td><select class="form-control" id="Status"><option>Present</option><option>Absent</option></td><td><input type="text" class="form-control" id="reason"></td></tr>');
+                            });
+
+                        });
+                });
+            });
+        </script>
+
+
+
+

@@ -1,0 +1,151 @@
+﻿
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+
+    var Mark =
+               {
+                   Id: '',
+                   GotMark: '',
+               };
+
+    $(document).ready(function () {
+        $('#save_marks').click(function () {
+            Marks = [];
+            $('table tbody tr').each(function () {
+                Mark = Object.create(Mark);
+                Mark.Id = $(this).attr('id');
+                Mark.GotMark = $('#GotMarks', this).val();
+                Marks.push(Mark);
+
+            });
+            marks = JSON.stringify({ 'marks': Marks });
+
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: '/Teacher_Dashboard/SaveTestMarks',
+                data: marks,
+                success: function () {
+                    alert('Marks Successfully Save');
+                },
+                failure: function (response) {
+                    alert('Something went wrong');
+                }
+            });
+        });
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("SubjectsByClass")',
+                { id: selectedClass }, function (data) {
+
+                    //alert(JSON.stringify(data));
+                    $('#subjects').html('');
+                    $('#subjects').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+        $("#subjects").click(function () {
+            var selectedSubject = $("#subjects").val();
+            $.get('@Url.Action("TestBySubject", "Teacher_Dashboard")',
+                { id: selectedSubject }, function (data) {
+
+                    $('#test').html('');
+                    $('#test').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#test').append('<option value=' + item.Id + '>' + item.Title + '</option>');
+                    });
+
+                });
+        });
+
+        $("#test").click(function () {
+            var selectedTest = $("#test").val();
+            $('#save_marks').prop('disabled', false);
+            $('#TestMarks').prop('disabled', false);
+            $('#Submit').prop('disabled', false);
+
+            $.get('@Url.Action("SubmissionByTest", "Teacher_Dashboard")',
+                { id: selectedTest }, function (data) {
+
+                    $('#marks_table').html('');
+
+                    $.each(data, function (i, item) {
+                        $('#marks_table').append('<tr id=' + item.test.Id + '><td>' + item.Name + '</td><td><input type="text" class="form-control" id="GotMarks" value=' + item.test.MarksGot + '></td></tr>');
+                    });
+
+                });
+        });
+    });
+
+</script>
+<div class="container">
+    @using (Html.BeginForm("TestMarksFromFile", "Teacher_Dashboard", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            <div class="col-md-8">
+                @ViewBag.Error
+                <div class="form-group">
+                    <lable class="col-md-2 control-label"><b>Select Class</b></lable>
+                    <div class="col-md-8">
+                        @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <br />
+                    <label class="control-label col-md-2">Subjects</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="subjects" name="subjects" disabled></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <br />
+                    <label class="control-label col-md-2">Test</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="test" name="test" disabled></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+
+            <center><h2>OR </h2></center>
+            <div class="form-group">
+                <br />
+                <div class="control-label col-md-3"><b>Excel File</b></div>
+                <div class="col-md-4">
+                    <input id="TestMarks" name="TestMarks" type="file" disabled />
+                </div>
+            </div>
+            <div class="form-group">
+                <br />
+                <div class="col-md-offset-2 col-md-10">
+                    <input id="Submit" type="submit" onclick="return formSubmit();" value="Submit" class="btn btn-default" disabled />
+                </div>
+            </div>
+
+        </div>
+    }
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Student Name
+                </th>
+
+                <th>
+                    Marks Got
+                </th>
+            </tr>
+        </thead>
+        <tbody id="marks_table"></tbody>
+    </table>
+    <button type="button" id="save_marks" class="btn btn-primary" disabled>Save</button>
+</div>
+

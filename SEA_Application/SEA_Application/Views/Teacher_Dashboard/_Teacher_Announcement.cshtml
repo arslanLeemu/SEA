@@ -1,0 +1,73 @@
+﻿@model IEnumerable<SEA_Application.Models.AspNetAnnouncement_Subject>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("SubjectsByClass")',
+                { id: selectedClass }, function (data) {
+
+                    //alert(JSON.stringify(data));
+                    $('#subjects').html('');
+                    $('#subjects').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+        $("#subjects").click(function () {
+            var selectedSubject = $("#subjects").val();
+            $.get('@Url.Action("AnnouncementBySubject", "Teacher_Dashboard")',
+                { id: selectedSubject }, function (data) {
+                    $('#announcement_table').html(' ');
+                    console.log(JSON.stringify(data));
+                    
+                    $.each(data, function (i, item) {
+                        $('#announcement_table').append('<tr><td>' + item.Title + '</td><td>' + item.SubjectName + '</td><td>' + item.Title + '</td><td><a href="/AspNetAnnouncement/Edit?id='+item.Id+'">Edit</a>|<a href="/AspNetAnnouncement/Detail?id='+item.Id+'">Detail</a>|<a href="/AspNetAnnouncement/Delete?id='+item.Id+'">Delete</a></td></tr>');
+                    });
+
+                });
+          
+        });
+    });
+</script>
+<p>
+    @Html.ActionLink("New Announcement", "Create","AspNetAnnouncement")
+</p>
+<div class="container">
+    <div class="row">
+        <div class="form-horizontal">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Subject</b></lable>
+                    <div class="col-md-8">
+                        @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Subject</b></lable>
+                    <div class="col-md-8">
+                        <select class="form-control" id="subjects" name="subjects" disabled></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                   Announcement Title
+                </th>
+                <th>
+                    Subject
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="announcement_table">
+
+        </tbody>
+    </table>
+</div>

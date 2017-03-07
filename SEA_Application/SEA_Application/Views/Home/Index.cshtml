@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+<div class="container">
+
+    <img style=" padding-top:100px; margin-top:200px; margin: 0 auto;" class="img-responsive center-block" src="~/SEA.png" />
+
+    <div style=" margin-top:100px; text-align: center;" class="row center-block">
+        <div style="display:inline-block; float:none; text-align:left; margin-right:-4px;" class="col-md-3 ">
+            <div class="card">
+
+                <div class="avatar">
+                    <img src=" ~/Webalys-Kameleon.pics-Student-3.ico" alt="" />
+                </div>
+                <div class="content">
+                    <p>
+                        Student
+                    </p>
+                    <p>
+
+                        <button onclick="window.location.href = '@Url.Action("Login", "Account")';" class="btn btn-default">Login</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div style="display:inline-block; float:none; text-align:left; margin-right:-4px;" class="col-md-3 ">
+            <div class="card">
+
+                <div class="avatar">
+                    <img src=" ~/Custom-Icon-Design-Pretty-Office-10-Teacher-male.ico" alt="" />
+                </div>
+                <div class="content">
+                    <p>
+                        Teacher
+                    </p>
+                    <p><button onclick="window.location.href = '@Url.Action("Login", "Account")';" class="btn btn-default">Login</button></p>
+                </div>
+            </div>
+        </div>
+        <div style="display:inline-block; float:none; text-align:left; margin-right:-4px;" class="col-md-3 ">
+            <div class="card">
+
+                <div class="avatar">
+                    <img src="~/download.jpeg" alt="" />
+                </div>
+                <div class="content">
+                    <p>
+                        Administrator
+                    </p>
+
+                    <p><button onclick="window.location.href = '@Url.Action("Login", "Account")';" class="btn btn-default">Login</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
