@@ -1,0 +1,102 @@
+﻿@model SEA_Application.Models.AspNetClass_FeeType
+
+@{
+    ViewBag.Title = "Create";
+}
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script>
+    var FeeType =
+                {
+                    ClassId: '',
+                    FeeTypeID: '',
+                    Amount: ''
+                };
+    feetypes = [];
+    $(document).ready(function () {
+        $('#save_feetype').click(function () {
+            $('#dynamicTable tbody tr').each(function () {
+                alert()
+                FeeType = Object.create(FeeType);
+                FeeType.ClassId = $('#ClassID').val();
+                FeeType.FeeTypeID = $('#FeeTypeID', this).val();
+                FeeType.Amount = $('#amount', this).val();
+
+                feetypes.push(FeeType);
+            });
+
+            class_feeType = JSON.stringify({ 'class_feeType': feetypes });
+
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: '/AspNetClass_FeeType/AddClass_FeeType',
+                data: class_feeType,
+                success: function () {
+                    $('#partial').html('Attendance Successfully Save');
+                },
+                failure: function (response) {
+                    $('#partial').html('Something went wrong');
+                }
+            });
+        });
+        $("#btnAdd").bind("click", function () {
+
+            $("#class_fee_body").append(GetDynamicTextBox(""));
+            $('#dynamicTable tr:last td:first').append($("#FeeTypeID").clone());
+            $('#btnRemove').click(function () {
+                $(this).closest('tr').remove();
+            })
+        });
+    });
+    function SomeDeleteRowFunction(btndel) {
+        if (typeof (btndel) == "object") {
+            $(btndel).closest("tr").remove();
+        } else {
+            return false;
+        }
+    }
+    function GetDynamicTextBox(value) {
+        var html = '<tr><td id="FeeType"></td><td><input type="text" id="amount" class="form-control"></td><td><input type="button" class="btn btn-danger remove" value="Remove" onclick="SomeDeleteRowFunction(this);"></td></tr>';
+        return html;
+    }
+</script>
+<h2>Create</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>AspNetClass_FeeType</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClassID, "ClassID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ClassID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <button id="btnAdd" type="button" class="btn btn-primary">Add Fee</button>
+        </div>
+        <table id="dynamicTable" class="table table-striped ">
+            <tbody id="class_fee_body"></tbody>
+        </table>
+        <div class="form-group">
+            <div class="col-md-10" hidden>
+                @Html.DropDownList("FeeTypeID", null, htmlAttributes: new { @class = "form-control", @hidden = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="button" id="save_feetype" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

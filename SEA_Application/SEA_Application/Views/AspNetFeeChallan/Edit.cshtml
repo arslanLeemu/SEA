@@ -1,0 +1,126 @@
+﻿@model SEA_Application.Models.AspNetFeeChallan
+
+@{
+    ViewBag.Title = "Edit";
+}
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<h2>Edit</h2>
+<script>
+    function pad(n) { return n < 10 ? '0' + n : n }
+    $(document).ready(function () {
+
+        var selectedDuration = $("#DurationTypeID").val();
+        var selectedClass = $("#ClassID").val();
+       
+               
+                $("#amount").val(@Model.TotalAmount);
+                var startDate = "@Model.StartDate";
+                startDate = new Date(startDate);
+                startDate = startDate.getFullYear() + "-" + pad(startDate.getMonth() + 1) + "-" + pad(startDate.getDate());
+                $("#startDate").val(startDate);
+
+                var endDate = "@Model.EndDate";
+                endDate = new Date(endDate);
+                endDate = endDate.getFullYear() + "-" + pad(endDate.getMonth() + 1) + "-" + pad(endDate.getDate());
+                $("#endDate").val(endDate);
+
+
+                var duedate="@Model.DueDate";
+                 dueDate = new Date(duedate);
+                dueDate = dueDate.getFullYear() + "-" + pad(dueDate.getMonth() + 1) + "-" + pad(dueDate.getDate());
+                $("#duedate").val(dueDate);
+           
+        $("#DurationTypeID").click(function () {
+            var selectedDuration = $("#DurationTypeID").val();
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("ChallanByDurationEdit", "AspNetFeeChallan")',
+                { classId: selectedClass, durationId: selectedDuration }, function (data) {
+
+                   
+                    $("#amount").val(data.amount);
+                    var startDate = new Date(parseInt(data.startDate.replace(/(^.*\()|([+-].*$)/g, '')));
+                    startDate = startDate.getFullYear() + "-" + pad(startDate.getMonth() + 1) + "-" + pad(startDate.getDate());
+                    $("#startDate").val(startDate);
+
+                    var endDate = new Date(parseInt(data.endDate.replace(/(^.*\()|([+-].*$)/g, '')));
+                    endDate = endDate.getFullYear() + "-" + pad(endDate.getMonth() + 1) + "-" + pad(endDate.getDate());
+                    $("#endDate").val(endDate);
+                });
+        });
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>AspNetFeeChallan</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClassID, "ClassID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ClassID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DurationTypeID, "DurationTypeID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("DurationTypeID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.DurationTypeID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control", @id = "startDate" } })
+                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", @id = "endDate" } })
+                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TotalAmount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TotalAmount, new { htmlAttributes = new { @class = "form-control", @id = "amount" } })
+                @Html.ValidationMessageFor(model => model.TotalAmount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DueDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DueDate, new { htmlAttributes = new { @class = "form-control", @id = "duedate" } })
+                @Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

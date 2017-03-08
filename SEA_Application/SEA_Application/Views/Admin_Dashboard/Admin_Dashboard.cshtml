@@ -35,6 +35,7 @@
                         <li><a href="@Url.Action("TeacherIndex", "AspNetUser")"><i class="glyphicon glyphicon-user"></i> Teachers List</a></li>
                         <li><a href="@Url.Action("Index", "AspNetClass")"><i class="glyphicon glyphicon-user"></i> Classes List</a></li>
                         <li><a href="@Url.Action("Index", "AspNetSubject")"><i class="glyphicon glyphicon-user"></i> Subjects List</a></li>
+                        <li><a href="@Url.Action("Index", "FeeManagement")"><i class="glyphicon glyphicon-user"></i> Fee Management</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-flag"></i> Transactions</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-exclamation-sign"></i> Rules</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-off"></i> Logout</a></li>
@@ -150,6 +151,49 @@
                     </div>
 
                     <hr>
+
+                    <div class="btn-group btn-group-justified">
+                        <a href="@Url.Action("Create","AspNetFeeType")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Fee Type
+                        </a>
+                        <a href="@Url.Action("Create","AspNetClass_FeeType")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Class Fee
+                        </a>
+                        <a href="@Url.Action("Create", "AspNetDurationType")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Fee Duration
+                        </a>
+                        <a href="@Url.Action("Create", "AspNetFeeChallan")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Fee Challan
+                        </a>
+                    </div>
+                    <hr>
+                    <div class="btn-group btn-group-justified">
+                        <a href="@Url.Action("Create","AspNetSession")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Session
+                        </a>
+                        <a href="@Url.Action("Create","AspNetTerm")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Term
+                        </a>
+                        <a href="@Url.Action("Create", "AspNetDiscountType")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Discount Type
+                        </a>
+                        <a href="@Url.Action("Create", "AspNetStudent_Discount")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Add Student Discount
+                        </a>
+                        <a href="@Url.Action("GenerateInvoicePDF", "AspNetFeeChallan")" class="btn btn-primary col-sm-3">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <br> Download Challan
+                        </a>
+                        
+                    </div>
                     <div class="well">Inbox Messages <span class="badge pull-right">3</span></div>
 
                     <hr>

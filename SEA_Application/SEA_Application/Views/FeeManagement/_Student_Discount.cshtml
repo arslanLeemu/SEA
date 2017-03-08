@@ -1,0 +1,79 @@
+﻿<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("StudentsByClass")',
+                { id: selectedClass }, function (data) {
+                    $('#StudentTable').html(' ');
+                    $.each(data, function (i, item) {
+                        $('#StudentTable').append("<tr><td>" + item.UserName + "</td><td>" + item.Name + "</td><td><a id='myLink' href='#' onclick='MyFunction(\"" + item.Id + "\");return false;'>View Discounts</a></td></tr>");
+                    });
+
+                });
+        });
+    });
+
+        
+
+    function MyFunction(studentID) {
+        $.get('@Url.Action("DiscountByStudent")',
+          { studentID: studentID }, function (data) {
+              $('#StudentDiscountTable').html(' ');
+              $('#detail').prop('hidden', false);
+              $.each(data, function (i, item) {
+                  $('#StudentDiscountTable').append('<tr><td>' + item.TypeName + '</td><td>' + item.Percentage + '</td><td><a href="/AspNetStudent_Discount/Edit?id=' + item.Id + '">Edit</a>|<a href="/AspNetStudent_Discount/Details?id=' + item.Id + '">Detail</a>|<a href="/AspNetStudent_Discount/Delete?id=' + item.Id + '">Delete</a></td></tr>');
+              });
+          });
+    }
+</script>
+<p>
+    @Html.ActionLink("Add New Student", "Create", "AspNetStudent_Discount")
+</p>
+<div class="container">
+    <div class="row">
+        <div class="form-horizontal">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Class</b></lable>
+                    <div class="col-md-8">
+                        @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Subject</b></lable>
+                    <div class="col-md-8">
+                        <select class="form-control" id="SubjectID" name="SubjectID" disabled></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="StudentTable"></tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div id="detail" hidden>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Discount Type</th>
+                        <th>Percent</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="StudentDiscountTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

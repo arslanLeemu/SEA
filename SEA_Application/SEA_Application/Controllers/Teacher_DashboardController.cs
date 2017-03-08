@@ -191,6 +191,18 @@ namespace SEA_Application.Controllers
 
             return Json(tests, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public JsonResult StudentsBySubject(int id)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            var students = (from student_subject in db.AspNetStudent_Subject
+                            join student in db.AspNetUsers on student_subject.StudentID equals student.Id
+                         where student_subject.SubjectID == id
+                         select new { student.UserName, student.Name,student.Id}).ToList();
+
+            return Json(students, JsonRequestBehavior.AllowGet);
+        }
         /******************************************************************************************************************
          * 
          *                                       Assignments Function

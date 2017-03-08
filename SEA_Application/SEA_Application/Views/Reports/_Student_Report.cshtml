@@ -1,0 +1,311 @@
+﻿<script>
+    $(document).ready(function () {
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("SubjectsByClass","Teacher_Dashboard")',
+                { id: selectedClass }, function (data) {
+                    $('#SubjectID').html('');
+                    $('#SubjectID').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#SubjectID').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+        
+        $("#SubjectID").click(function () {
+            var selectedSubject = $("#SubjectID").val();
+            $.get('@Url.Action("StudentsBySubject", "Teacher_Dashboard")',
+                { id: selectedSubject }, function (data) {
+
+                    $('#StudentTable').html(' ');
+                    $.each(data, function (i, item) {
+                        $('#StudentTable').append("<tr><td>" + item.UserName + "</td><td>" + item.Name + "</td><td><a id='myLink' href='#' onclick='MyFunction(\"" + item.Id + "\");return false;'>View Report</a></td></tr>");
+                    });
+                });
+        });
+
+
+
+        
+    });
+    function generateGraph(data)
+    {
+        var chartConfig = {
+
+            "type": "stock",
+            "export": {
+                "enabled": true
+            },
+            "dataSets": [{
+                "title": "data set",
+
+                "fieldMappings": [{
+                    "fromField": "value",
+                    "toField": "value"
+                },
+                {
+                    "fromField": "ballontext",
+                    "toField": "ballontext"
+                }
+
+                ],
+                "dataProvider": data,
+                "categoryField": "date"
+            }],
+
+            "panels": [{
+
+                "showCategoryAxis": false,
+                "title": "Value",
+                "percentHeight": 70,
+
+                "stockGraphs": [{
+
+                    "id": "g1",
+
+                    "valueField": "value",
+                    "bullet": "round",
+                    "comparable": true,
+                    "compareField": "value",
+                    "type": "smoothedLine",
+                    "balloonText": "[[ballontext]]:<b>[[value]]</b>",
+
+                    "compareGraphBalloonText": "[[ballontext]]:<b>[[value]]</b>"
+                }],
+
+                "stockLegend": {
+                    "periodValueTextComparing": "[[percents.value.close]]%",
+                    "periodValueTextRegular": "[[value.close]]"
+                },
+                "valueAxes": [{
+                    "guides": [{
+                        "value": 1100,
+                        "label": "AVERAGE",
+                        "position": "right",
+                        "dashLength": 10,
+                        "fillColor": "red",
+                        "axisColor": "red",
+                        "axisThickness": 5
+                    }]
+                }]
+            },
+
+              {
+                  "title": "Volume",
+                  "percentHeight": 5,
+
+
+                  "stockLegend": {
+                      "periodValueTextRegular": "[[value.close]]"
+                  }
+              }
+            ],
+
+            "chartScrollbarSettings": {
+                "graph": "g1"
+            },
+
+            "chartCursorSettings": {
+                "valueBalloonsEnabled": true,
+                "fullWidth": true,
+                "cursorAlpha": 0.1
+            },
+
+            "periodSelector": {
+                "periods": [{
+                    "period": "MM",
+                    "selected": true,
+                    "count": 1,
+                    "label": "1 month"
+                }, {
+                    "period": "YYYY",
+                    "count": 1,
+                    "label": "1 year"
+                }, {
+                    "period": "YTD",
+                    "label": "YTD"
+                }, {
+                    "period": "MAX",
+                    "label": "MAX"
+                }]
+            }
+        }
+        var chart = AmCharts.makeChart("chartdiv1", chartConfig);
+        chart.ignoreZoom = true;
+        chart.addListener("zoomed", function (event) {
+            var selectedCompare = $("#Compare").val();
+            // ignore zoom if the flag is set
+            if (chart.ignoreZoom) {
+                chart.ignoreZoom = false;
+                return;
+            }
+
+            // let's use the first graph from the first panel as a base
+            var graph = chart.panels[0].stockGraphs[0];
+            var field = graph.valueField;
+
+            // let's get currently selected data set
+            var dataset = chart.mainDataSet;
+            var category = dataset.categoryField;
+
+            // iterate via data set to calculate average value
+            var total = 0;
+            var count = 0;
+            var average = 0;
+            if (selectedCompare === "Individual")
+            {
+                
+                for (var x in dataset.dataProvider) {
+                    var date = dataset.dataProvider[x][category];
+                    if (date >= event.startDate && date <= event.endDate) {
+                        total += dataset.dataProvider[x][field];
+                        count++;
+                    }
+                }
+                 average = total / count;
+            }
+            else
+            {
+               
+                var startDate = event.startDate;
+                var endDate = event.endDate;
+                alert(startDate);
+                average = 60;
+            }
+
+            // update guide's position
+            chart.panels[0].valueAxes[0].guides[0].value = average;
+
+            // update the chart
+            chart.ignoreZoom = true;
+            chart.validateData();
+
+            // restore same zoom
+            chart.ignoreZoom = true;
+            chart.zoom(event.startDate, event.endDate);
+        });
+    }
+    function comp(a, b) {
+        return a.date.getTime() - b.date.getTime();
+    }
+    function MyFunction(studentID) {
+        var report = $("#Report").val();
+        
+        var funcUrl = " ";
+        if (report === "Assignment")
+        {
+            $.get('@Url.Action("StudentAssignment_Report", "Reports")',
+           { studentID: studentID, subjectID: $("#SubjectID").val() }, function (data) {
+               $.each(data, function (i, item) {
+
+                   item.date = new Date(JSON.stringify(item.date));
+                   item.date.setDate(item.date.getDate());
+               });
+               
+               generateGraph(data);
+           });
+
+           
+        }
+        else if (report === "Test")
+        {
+            $.get('@Url.Action("StudentTest_Report", "Reports")',
+          { studentID: studentID, subjectID: $("#SubjectID").val() }, function (data) {
+              $.each(data, function (i, item) {
+
+                  item.date = new Date(JSON.stringify(item.date));
+                  item.date.setDate(item.date.getDate());
+              });
+              generateGraph(data);
+          });
+        }
+        else if (report === "Exam")
+        {
+            $.get('@Url.Action("StudentExam_Report", "Reports")',
+          { studentID: studentID, subjectID: $("#SubjectID").val() }, function (data) {
+              $.each(data, function (i, item) {
+                 
+                  item.date = new Date(JSON.stringify(item.date));
+                  item.date.setDate(item.date.getDate());
+              });
+              generateGraph(data);
+          });
+           
+        }
+        else if (report === "All") {
+            $.get('@Url.Action("StudentAll_Report", "Reports")',
+          { studentID: studentID, subjectID: $("#SubjectID").val() }, function (data) {
+              $.each(data, function (i, item) {
+
+                  item.date = new Date(JSON.stringify(item.date));
+                  item.date.setDate(item.date.getDate());
+              });
+              data.sort(comp);
+              generateGraph(data);
+          });
+
+        }
+    }
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="form-horizontal">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Class</b></lable>
+                    <div class="col-md-8">
+                        @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Subject</b></lable>
+                    <div class="col-md-8">
+                        <select class="form-control" id="SubjectID" name="SubjectID" disabled></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Report</b></lable>
+                    <div class="col-md-8">
+                        <select class="form-control" id="Report" name="Report" >
+                            <option value="All">All</option>
+                            <option value="Assignment">Assignment</option>
+                            <option value="Test">Test</option>
+                            <option value="Exam">Exam</option>
+
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Compare</b></lable>
+                    <div class="col-md-8">
+                        <select class="form-control" id="Compare" name="Compare">
+                            <option value="Individual">Individual</option>
+                            <option value="Relevance">Relevance</option>
+                            
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="StudentTable">
+
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div id="chartdiv1"></div>
+    </div>
+</div>

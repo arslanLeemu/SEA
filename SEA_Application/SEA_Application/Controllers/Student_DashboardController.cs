@@ -8,14 +8,29 @@ using System.Web;
 using System.Web.Mvc;
 using SEA_Application.Models;
 using System.IO;
+using System.Web.UI;
+using System.Text;
+using NReco.PdfGenerator;
+using iTextSharp.text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
+using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.pipeline.html;
+using iTextSharp.tool.xml.pipeline.end;
+using iTextSharp.tool.xml;
+using iTextSharp.tool.xml.pipeline.css;
+using iTextSharp.tool.xml.parser;
 
 namespace SEA_Application.Controllers
 {
+    
     [Authorize(Roles = "Student")]
     public class Student_DashboardController : Controller
     {
         private SEA_DatabaseEntities db = new SEA_DatabaseEntities();
         private string StudentID;
+
+        public string OUTPUT_FILE { get; private set; }
 
         public Student_DashboardController()
         {
@@ -62,8 +77,8 @@ namespace SEA_Application.Controllers
         public ActionResult Student_Assignment_Submission(int id)
         {
             //Student_Assignment assignments = db.Student_Assignment.Find(id);
-           Student_Assignment assignment = db.Student_Assignment.Include(x=>x.AspNetAssignment.AspNetAssignment_Topic).Where(x => x.AssignmentID == id && x.StudentID == StudentID).FirstOrDefault();
-            if(assignment.SubmittedFileName==null)
+            Student_Assignment assignment = db.Student_Assignment.Include(x => x.AspNetAssignment.AspNetAssignment_Topic).Where(x => x.AssignmentID == id && x.StudentID == StudentID).FirstOrDefault();
+            if (assignment.SubmittedFileName == null)
             {
                 assignment.SubmittedFileName = " ";
             }
@@ -204,8 +219,8 @@ namespace SEA_Application.Controllers
             List<Marks> marks = new List<Marks>();
             var student_Assignment = (from student_assignment in db.Student_Assignment
                                       where student_assignment.AspNetAssignment.SubjectID == subjectID && student_assignment.StudentID == StudentID
-                                      select new { student_assignment.AspNetAssignment.Title,student_assignment.AspNetAssignment.DueDate, student_assignment.AspNetAssignment.TotalMarks, student_assignment.MarksGot }).ToList();
-            foreach(var item in student_Assignment)
+                                      select new { student_assignment.AspNetAssignment.Title, student_assignment.AspNetAssignment.DueDate, student_assignment.AspNetAssignment.TotalMarks, student_assignment.MarksGot }).ToList();
+            foreach (var item in student_Assignment)
             {
                 Marks mark = new Marks();
                 mark.DueDate = item.DueDate.ToString();
@@ -213,11 +228,11 @@ namespace SEA_Application.Controllers
                 mark.Type = "Assignment";
                 mark.TotalMarks = item.TotalMarks;
                 mark.MarksGot = item.MarksGot;
-                marks.Add(mark);  
+                marks.Add(mark);
             }
             var student_Test = (from student_test in db.AspNetStudent_Test
-                                      where student_test.AspNetTest.SubjectID == subjectID && student_test.StudentID == StudentID
-                                      select new { student_test.AspNetTest.Title, student_test.AspNetTest.Date, student_test.AspNetTest.TotalMarks, student_test.MarksGot }).ToList();
+                                where student_test.AspNetTest.SubjectID == subjectID && student_test.StudentID == StudentID
+                                select new { student_test.AspNetTest.Title, student_test.AspNetTest.Date, student_test.AspNetTest.TotalMarks, student_test.MarksGot }).ToList();
             foreach (var item in student_Test)
             {
                 Marks mark = new Marks();
@@ -265,10 +280,452 @@ namespace SEA_Application.Controllers
         public JsonResult AnnouncementBySubject(int subjectID)
         {
             var announcements = (from announcement in db.AspNetAnnouncement_Subject
-                               where announcement.SubjectID == subjectID
-                               select new { announcement.AspNetAnnouncement.Title, announcement.AspNetSubject.SubjectName, announcement.Id }).ToList();
+                                 where announcement.SubjectID == subjectID
+                                 select new { announcement.AspNetAnnouncement.Title, announcement.AspNetSubject.SubjectName, announcement.Id }).ToList();
             return Json(announcements, JsonRequestBehavior.AllowGet);
         }
+
+        public class feeType
+        {
+            public string typeName { get; set; }
+            public int amount { get; set; }
+        }
+        public class challanform
+        {
+            public string SchoolName { get; set; }
+            public string BranchName { get; set; }
+            public string ChallanCopy { get; set; }
+            public DateTime? AcademicSessionStart { get; set; }
+            public DateTime? AcademicSessionEnd { get; set; }
+            public int? ChallanID { get; set; }
+            public string UserID { get; set; }
+            public string StudentName { get; set; }
+            public string StudentClass { get; set; }
+            public List<feeType> FeeType { get; set; }
+            public List<String> DiscountNotes { get; set; }
+            public DateTime? DueDate { get; set; }
+            public List<String> Notes { get; set; }
+            public DateTime PrintedDate { get; set; }
+            public int TotalAmount { get; set; }
+
+
+        }
+        public byte[] GenerateInvoicePDF(object sender, EventArgs e)
+        {
+            AspNetClass studentClass = (from student_subject in db.AspNetStudent_Subject
+                                        join subject in db.AspNetSubjects on student_subject.SubjectID equals subject.Id
+                                        where student_subject.StudentID == StudentID
+                                        select subject.AspNetClass).FirstOrDefault();
+            challanform Challan = new challanform();
+            Challan.AcademicSessionStart = db.AspNetSessions.OrderByDescending(x => x.Id).Select(x => x.SessionStartDate).FirstOrDefault();
+            Challan.AcademicSessionEnd = db.AspNetSessions.OrderByDescending(x => x.Id).Select(x => x.SessionEndDate).FirstOrDefault();
+            Challan.ChallanID = db.AspNetStudent_Payment.Where(x => x.StudentID == StudentID).OrderByDescending(x => x.Id).Select(x => x.FeeChallanID).FirstOrDefault();
+            Challan.StudentName = db.AspNetUsers.Where(x => x.Id == StudentID).Select(x => x.Name).FirstOrDefault();
+            Challan.StudentClass = studentClass.ClassName;
+            Challan.SchoolName = "LGS";
+            Challan.BranchName = "Cantt";
+            Challan.ChallanCopy = "Student Copy";
+/*
+            int? discountSum = db.AspNetStudent_Discount.Where(x => x.StudentID == StudentID).Sum(x => x.Percentage);
+            if (discountSum == null)
+            {
+                discountSum = 0;
+            }
+            int? tuitionFee = db.AspNetClass_FeeType.Where(x => x.AspNetFeeType.TypeName == "Tuition Fee").Select(x => x.Amount).FirstOrDefault();
+            int? discount = tuitionFee * discountSum / 100;
+            int payabletuitionfee = Convert.ToInt32(tuitionFee - discount);*/
+            string FeeDurationTypeName = (from durationtype in db.AspNetDurationTypes
+                                          join challan in db.AspNetFeeChallans on durationtype.Id equals challan.DurationTypeID
+                                          where challan.Id == Challan.ChallanID
+                                          select durationtype.TypeName).FirstOrDefault();
+            int? payableAmount = db.AspNetStudent_Payment.Where(x => x.StudentID == StudentID && x.FeeChallanID == Challan.ChallanID).Select(x => x.PaymentAmount).SingleOrDefault();
+
+
+            var others = (from feetype in db.AspNetFeeTypes
+                          join class_feetype in db.AspNetClass_FeeType on feetype.Id equals class_feetype.FeeTypeID
+                          where class_feetype.ClassID == studentClass.Id && feetype.TypeName != "Tuition Fee"
+                          select new { class_feetype.Amount, feetype.TypeName }).ToList();
+
+            Challan.FeeType = new List<feeType>();
+            foreach (var item in others)
+            {
+                feeType FeeTypes = new feeType();
+                FeeTypes.typeName = item.TypeName;
+
+                if (FeeDurationTypeName == "Quarterly")
+                {
+                    FeeTypes.amount = Convert.ToInt32(item.Amount * 4);
+                }
+                else if (FeeDurationTypeName == "6 Months")
+                {
+                    FeeTypes.amount = Convert.ToInt32(item.Amount * 6);
+                }
+                else if (FeeDurationTypeName == "Yearly")
+                {
+                    FeeTypes.amount = Convert.ToInt32(item.Amount * 12);
+                }
+                else
+                {
+                    FeeTypes.amount = Convert.ToInt32(item.Amount);
+                }
+
+                Challan.FeeType.Add(FeeTypes);
+            }
+
+            int? tuitionfee=payableAmount- Challan.FeeType.Sum(x => x.amount);
+
+            feeType FeeType = new feeType();
+            FeeType.typeName = "Tuition Fee";
+            FeeType.amount =Convert.ToInt32(tuitionfee);
+            Challan.FeeType.Add(FeeType);
+
+            Challan.DueDate = db.AspNetFeeChallans.Where(x => x.Id == Challan.ChallanID).Select(x => x.DueDate).FirstOrDefault();
+            Challan.TotalAmount = Challan.FeeType.Sum(x => x.amount);
+
+            using (StringWriter sw = new StringWriter())
+            {
+                using (HtmlTextWriter hw = new HtmlTextWriter(sw))
+                {
+                    StringBuilder sb = new StringBuilder();
+                  
+                
+                    sb.Append("<div style='margin-right: -15px;margin - left: -15px;'> ");
+                    sb.Append("<div style='width: 33.33333333%; float:left;'>");
+                    sb.Append("<center><font size='3'><b>"+Challan.SchoolName+"</b></font></center>");
+                    sb.Append("<center><font size='2'><b>" + Challan.BranchName + "</b></font></center>");
+                    sb.Append("<br/>");
+                    sb.Append("<center><font size='3'><b>" + Challan.ChallanCopy + "</b></font></center>");
+
+                    sb.Append("<section style='border: 1px solid black; margin - top:10px; padding: 7px;'> ");
+                    sb.Append("<table>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr>");
+                    sb.Append("<td><font size='2'><b>Challan ID:</b></font></td>");
+                    sb.Append("<td align='center'><font size='2'>" + Challan.ChallanID + "</font></td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td><font size='2'><b>Academic Session:</b></font></td>");
+                    sb.Append("<td align='center'><font size='2'>" + Challan.AcademicSessionStart+" - "+Challan.AcademicSessionEnd + "</font></td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</section>");
+
+                    sb.Append("</div>");
+                    sb.Append("</div>");
+
+                   
+                    var htmlContent = String.Format(sb.ToString(),
+        DateTime.Now);
+                    var htmlToPdf = new NReco.PdfGenerator.HtmlToPdfConverter();
+                   var bytes=htmlToPdf.GeneratePdf(htmlContent);
+                    Response.Clear();
+                    MemoryStream ms = new MemoryStream(bytes);
+                    Response.ContentType = "application/pdf";
+                    Response.AddHeader("content-disposition", "attachment;filename=labtest.pdf");
+                    Response.Buffer = true;
+                    ms.WriteTo(Response.OutputStream);
+                    Response.End();
+                    /*FileStream fs = new FileStream(@"g://somepath.pdf", FileMode.OpenOrCreate);
+                    fs.Write(bytes, 0, bytes.Length);
+                    fs.Close();*/
+                    return bytes;
+
+
+                    /*
+                    sb.Append("< div class='row'>");
+
+                    sb.Append("<div class='col-sm-4' style='width:400px'>");
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr rowspan='2'>");
+                    sb.Append("<td>Academic Session:</td>");
+                    sb.Append("<td>" + Challan.AcademicSessionStart + "-" + Challan.AcademicSessionEnd + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Challan ID:</td>");
+                    sb.Append("<td>" + Challan.ChallanID + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Student ID:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentName + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Student Name:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentName + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Class:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentClass + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+                    sb.Append("<div class='panel panel-default well' style='height:400px'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    foreach (var item in Challan.FeeType)
+                    {
+                        sb.Append("<tr>");
+                        sb.Append("<td>" + item.typeName + "</td>");
+                        sb.Append("<td align='right'> Rs </td>");
+                        sb.Append("<td align='right'>" + item.amount + "</td>");
+                        sb.Append("</tr>");
+                    }
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>"); 
+                    sb.Append("<tbody>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Due Date of Payment:</td>");
+                    sb.Append("<td></td>");
+                    sb.Append("<td align='right'>" + Challan.DueDate + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Amount:</td>");
+                    sb.Append("<td></td>");
+                    sb.Append("<td align='right'>" + Challan.TotalAmount + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("</div>");
+
+                    sb.Append("<div class='col-sm-4' style='width:400px'>");
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr rowspan='2'>");
+                    sb.Append("<td>Academic Session:</td>");
+                    sb.Append("<td>" + Challan.AcademicSessionStart + "-" + Challan.AcademicSessionEnd + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Challan ID:</td>");
+                    sb.Append("<td>" + Challan.ChallanID + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Student ID:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentName + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Student Name:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentName + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Class:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentClass + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+                    sb.Append("<div class='panel panel-default well' style='height:400px'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    foreach (var item in Challan.FeeType)
+                    {
+                        sb.Append("<tr>");
+                        sb.Append("<td>" + item.typeName + "</td>");
+                        sb.Append("<td align='right'> Rs </td>");
+                        sb.Append("<td align='right'>" + item.amount + "</td>");
+                        sb.Append("</tr>");
+                    }
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Due Date of Payment:</td>");
+                    sb.Append("<td></td>");
+                    sb.Append("<td align='right'>" + Challan.DueDate + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Amount:</td>");
+                    sb.Append("<td></td>");
+                    sb.Append("<td align='right'>" + Challan.TotalAmount + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("</div>");
+
+                    sb.Append("<div class='col-sm-4' style='width:400px'>");
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr rowspan='2'>");
+                    sb.Append("<td>Academic Session:</td>");
+                    sb.Append("<td>" + Challan.AcademicSessionStart + "-" + Challan.AcademicSessionEnd + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Challan ID:</td>");
+                    sb.Append("<td>" + Challan.ChallanID + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Student ID:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentName + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Student Name:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentName + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Class:</td>");
+                    sb.Append("<td align='right'>" + Challan.StudentClass + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+                    sb.Append("<div class='panel panel-default well' style='height:400px'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    foreach (var item in Challan.FeeType)
+                    {
+                        sb.Append("<tr>");
+                        sb.Append("<td>" + item.typeName + "</td>");
+                        sb.Append("<td align='right'> Rs </td>");
+                        sb.Append("<td align='right'>" + item.amount + "</td>");
+                        sb.Append("</tr>");
+                    }
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("<br/>");
+
+
+                    sb.Append("<div class='panel panel-default well'>");
+                    sb.Append("<table class='table'>");
+                    sb.Append("<tbody>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Due Date of Payment:</td>");
+                    sb.Append("<td></td>");
+                    sb.Append("<td align='right'>" + Challan.DueDate + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("<tr>");
+                    sb.Append("<td>Amount:</td>");
+                    sb.Append("<td></td>");
+                    sb.Append("<td align='right'>" + Challan.TotalAmount + "</td>");
+                    sb.Append("</tr>");
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                    sb.Append("</div>");
+
+                    sb.Append("</div>");
+
+                   
+                */
+
+
+                    /*   StringReader sr = new StringReader(sb.ToString());
+
+
+
+
+                       List<string> cssFiles = new List<string>();
+                       cssFiles.Add(@"/Content/bootstrap.css");
+                       cssFiles.Add(@"/Content/challanform.css");
+
+                       var output = new MemoryStream();
+
+                       var input = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
+
+                       var document = new Document();
+                       var writer = PdfWriter.GetInstance(document, output);
+                       writer.CloseStream = false;
+
+                       document.Open();
+                       var htmlContext = new HtmlPipelineContext(null);
+                       htmlContext.SetTagFactory(iTextSharp.tool.xml.html.Tags.GetHtmlTagProcessorFactory());
+
+                       ICSSResolver cssResolver = XMLWorkerHelper.GetInstance().GetDefaultCssResolver(false);
+                       cssFiles.ForEach(i => cssResolver.AddCssFile(System.Web.HttpContext.Current.Server.MapPath(i), true));
+
+                       var pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(htmlContext, new PdfWriterPipeline(document, writer)));
+                       var worker = new XMLWorker(pipeline, true);
+                       var p = new XMLParser(worker);
+                       p.Parse(input);
+                       document.Close();
+                       output.Position = 0;
+
+
+                       Response.Clear();
+                       Response.ContentType = "application/pdf";
+                       Response.AddHeader("Content-Disposition", "attachment; filename=myfile.pdf");
+                       Response.BinaryWrite(output.ToArray());
+                       // myMemoryStream.WriteTo(Response.OutputStream); //works too
+                       Response.Flush();
+                       Response.Close();
+                       Response.End();
+
+
+                   */
+
+                    /*
+                    
+                      Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+
+
+                      HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+
+
+                      PdfWriter writer = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                      pdfDoc.Open();
+                      htmlparser.Parse();
+                      pdfDoc.Close();
+                      Response.ContentType = "application/pdf";
+
+                      Response.AddHeader("content-disposition", "attachment;filename=challanform.pdf");
+                      Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                      Response.Write(pdfDoc);
+                      Response.End();
+                    */
+                }
+
+            }
+        }
         
+
+
     }
 }

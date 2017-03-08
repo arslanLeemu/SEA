@@ -1,0 +1,77 @@
+﻿
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("StudentsByClass")',
+                { id: selectedClass }, function (data) {
+                    $('#StudentTable').html(' ');
+                    $.each(data, function (i, item) {
+                        $('#StudentTable').append("<tr><td>" + item.UserName + "</td><td>" + item.Name + "</td><td><a id='myLink' href='#' onclick='MyFunction(\"" + item.Id + "\");return false;'>View History</a></td></tr>");
+                    });
+
+                });
+        });
+    });
+
+
+
+    function MyFunction(studentID) {
+        $.get('@Url.Action("HistoryByStudent")',
+          { studentID: studentID }, function (data) {
+              $('#StudentHistoryTable').html(' ');
+              $('#detail').prop('hidden', false);
+              $.each(data, function (i, item) {
+                  $('#StudentHistoryTable').append("<tr><tr><td>" + item.FeeChallanID + "</td><td>" + item.TypeName + "</td><td>" + item.StartDate + "</td><td>" + item.EndDate + "</td><td>" + item.TotalAmount + "</td><td>" + item.PaymentAmount + "</td><td>" + item.PaymentDate + "</td></tr>");
+              });
+          });
+    }
+</script>
+<div class="container">
+    <div class="row">
+        <div class="form-horizontal">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <lable class="col-md-3 control-label"><b>Select Class</b></lable>
+                    <div class="col-md-8">
+                        @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="StudentTable"></tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div id="detail" hidden>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Challan ID</th>
+                        <th>Duration Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Total Amount</th>
+                        <th>Payment Amount</th>
+                        <th>Payment Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="StudentHistoryTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

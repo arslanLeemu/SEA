@@ -10,10 +10,12 @@ using SEA_Application.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System.IO;
+using System.EnterpriseServices;
 
 namespace SEA_Application.Controllers
 {
     [Authorize(Roles = "Teacher")]
+  
     public class AspNetAssignmentController : Controller
     {
         private SEA_DatabaseEntities db = new SEA_DatabaseEntities();
@@ -65,8 +67,10 @@ namespace SEA_Application.Controllers
         // POST: AspNetAssignment/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
+        
         public ActionResult Create([Bind(Include = "Id,SubjectID,ClassID,PublishDate,DueDate,Description,TotalMarks,Weightage,Title,FileName,TeacherID")] AspNetAssignment aspNetAssignment)
         {
             IEnumerable<string> topics = Request.Form["TopicID"].Split(',');
