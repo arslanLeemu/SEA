@@ -31,24 +31,17 @@ namespace SEA_Application.Models
         public virtual DbSet<AspNetAssignment_Topic> AspNetAssignment_Topic { get; set; }
         public virtual DbSet<AspNetAttendance> AspNetAttendances { get; set; }
         public virtual DbSet<AspNetClass> AspNetClasses { get; set; }
-        public virtual DbSet<AspNetClass_FeeType> AspNetClass_FeeType { get; set; }
-        public virtual DbSet<AspNetDiscountType> AspNetDiscountTypes { get; set; }
-        public virtual DbSet<AspNetDurationType> AspNetDurationTypes { get; set; }
+        public virtual DbSet<AspNetCurriculum> AspNetCurriculums { get; set; }
         public virtual DbSet<AspNetExam> AspNetExams { get; set; }
-        public virtual DbSet<AspNetFeeChallan> AspNetFeeChallans { get; set; }
-        public virtual DbSet<AspNetFeeType> AspNetFeeTypes { get; set; }
         public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
-        public virtual DbSet<AspNetSession> AspNetSessions { get; set; }
         public virtual DbSet<AspNetStudent> AspNetStudents { get; set; }
         public virtual DbSet<AspNetStudent_Announcement> AspNetStudent_Announcement { get; set; }
-        public virtual DbSet<AspNetStudent_Discount> AspNetStudent_Discount { get; set; }
         public virtual DbSet<AspNetStudent_Exam> AspNetStudent_Exam { get; set; }
-        public virtual DbSet<AspNetStudent_Payment> AspNetStudent_Payment { get; set; }
         public virtual DbSet<AspNetStudent_Subject> AspNetStudent_Subject { get; set; }
         public virtual DbSet<AspNetStudent_Test> AspNetStudent_Test { get; set; }
+        public virtual DbSet<AspNetSubject_Curriculum> AspNetSubject_Curriculum { get; set; }
         public virtual DbSet<AspNetSubject> AspNetSubjects { get; set; }
         public virtual DbSet<AspNetTeacher> AspNetTeachers { get; set; }
-        public virtual DbSet<AspNetTerm> AspNetTerms { get; set; }
         public virtual DbSet<AspNetTest> AspNetTests { get; set; }
         public virtual DbSet<AspNetTest_Topic> AspNetTest_Topic { get; set; }
         public virtual DbSet<AspNetTopic> AspNetTopics { get; set; }

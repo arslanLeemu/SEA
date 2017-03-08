@@ -23,9 +23,7 @@ namespace SEA_Application.Models
             this.AspNetExams = new HashSet<AspNetExam>();
             this.AspNetStudents = new HashSet<AspNetStudent>();
             this.AspNetStudent_Announcement = new HashSet<AspNetStudent_Announcement>();
-            this.AspNetStudent_Discount = new HashSet<AspNetStudent_Discount>();
             this.AspNetStudent_Exam = new HashSet<AspNetStudent_Exam>();
-            this.AspNetStudent_Payment = new HashSet<AspNetStudent_Payment>();
             this.AspNetStudent_Subject = new HashSet<AspNetStudent_Subject>();
             this.AspNetStudent_Test = new HashSet<AspNetStudent_Test>();
             this.AspNetSubjects = new HashSet<AspNetSubject>();
@@ -64,11 +62,7 @@ namespace SEA_Application.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetStudent_Announcement> AspNetStudent_Announcement { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AspNetStudent_Discount> AspNetStudent_Discount { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetStudent_Exam> AspNetStudent_Exam { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AspNetStudent_Payment> AspNetStudent_Payment { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetStudent_Subject> AspNetStudent_Subject { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

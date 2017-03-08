@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using SEA_Application.Models;
+using System.Transactions;
 
 namespace SEA_Application.Controllers
 {
@@ -51,21 +52,27 @@ namespace SEA_Application.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(AspNetTopic aspNetTopic)
         {
-            IEnumerable<string> topics = Request.Form["DynamicTextBox"].Split(',');
-            if (ModelState.IsValid)
+            var dbTransaction = db.Database.BeginTransaction();
+            try
             {
-                foreach(var item in topics)
+                IEnumerable<string> topics = Request.Form["DynamicTextBox"].Split(',');
+                if (ModelState.IsValid)
                 {
-                    AspNetTopic aspnettopic = new AspNetTopic();
-                    aspnettopic.SubjectID = aspNetTopic.SubjectID;
-                    aspnettopic.TopicName = item;
-                    db.AspNetTopics.Add(aspnettopic);
-                    db.SaveChanges();
+                    foreach(var item in topics)
+                    {
+                        AspNetTopic aspnettopic = new AspNetTopic();
+                        aspnettopic.SubjectID = aspNetTopic.SubjectID;
+                        aspnettopic.TopicName = item;
+                        db.AspNetTopics.Add(aspnettopic);
+                        db.SaveChanges();
+                    }
+                    return RedirectToAction("Index");
                 }
-               
-                return RedirectToAction("Index");
+                dbTransaction.Commit();
             }
-            
+            catch (Exception) { dbTransaction.Dispose(); }
+
+
             ViewBag.SubjectID = new SelectList(db.AspNetSubjects, "Id", "SubjectName", aspNetTopic.SubjectID);
             return View(aspNetTopic);
         }

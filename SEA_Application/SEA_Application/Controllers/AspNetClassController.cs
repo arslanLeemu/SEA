@@ -67,7 +67,9 @@ namespace SEA_Application.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ClassfromFile(AspNetClass aspNetClass)
         {
-           // if (ModelState.IsValid)
+            // if (ModelState.IsValid)
+            var dbTransaction = db.Database.BeginTransaction();
+            try
             {
                 HttpPostedFileBase file = Request.Files["classes"];
                 if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
@@ -99,8 +101,9 @@ namespace SEA_Application.Controllers
                         
                     }
                 }
-               
+                dbTransaction.Commit();
             }
+            catch (Exception) { dbTransaction.Dispose(); }
 
            // ViewBag.TeacherID = new SelectList(db.AspNetUsers, "Id", "Name", aspNetClass.TeacherID);
             return View(aspNetClass);

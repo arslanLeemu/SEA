@@ -9,6 +9,57 @@
                };
 
     $(document).ready(function () {
+
+        var subjectcookieval = null;
+        var ClassCookie_TestMarksval = null;
+        var TestCookie_TestMarksval = null;
+        var allcookies = document.cookie;
+
+        // Get all the cookies pairs in an array
+        cookiearray = allcookies.split(';');
+
+        // Now take key value pair out of this array
+        for (var i = 0; i < cookiearray.length; i++) {
+            name = cookiearray[i].split('=')[0];
+            value = cookiearray[i].split('=')[1];
+
+            console.log(cookiearray[i]);
+
+            if (cookiearray[i].split('=')[0] == " ClassCookie_TestMarks" || cookiearray[i].split('=')[0] == "ClassCookie_TestMarks") {
+                ClassCookie_TestMarksval = cookiearray[i].split('=')[1];
+
+            }
+
+            if (cookiearray[i].split('=')[0] == " SubjectsCookie_TestMarks" || cookiearray[i].split('=')[0] == "SubjectsCookie_TestMarks") {
+                subjectcookieval = cookiearray[i].split('=')[1];
+
+            }
+            if (cookiearray[i].split('=')[0] == " TestCookie_TestMarks" || cookiearray[i].split('=')[0] == "TestCookie_TestMarks") {
+                TestCookie_TestMarksval = cookiearray[i].split('=')[1];
+
+            }
+        }
+        console.log("classval", ClassCookie_TestMarksval);
+
+        console.log("subval", subjectcookieval);
+        if (ClassCookie_TestMarksval != null && subjectcookieval != null) {
+
+            var selectClass = document.getElementById('ClassID');
+            selectClass.value = ClassCookie_TestMarksval;
+
+
+            
+            SubjectsByClassID(ClassCookie_TestMarksval);
+            TestMarksBySubjID(subjectcookieval);
+            TestMarksByTestID(TestCookie_TestMarksval);
+                            
+        }
+
+
+
+
+
+
         $('#save_marks').click(function () {
             Marks = [];
             $('table tbody tr').each(function () {
@@ -36,6 +87,11 @@
         });
         $("#ClassID").click(function () {
             var selectedClass = $("#ClassID").val();
+            document.cookie = "ClassCookie_TestMarks=" + selectedClass + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+            SubjectsByClassID(selectedClass);
+        });
+        function SubjectsByClassID(selectedClass)
+        {
             $.get('@Url.Action("SubjectsByClass")',
                 { id: selectedClass }, function (data) {
 
@@ -47,9 +103,15 @@
                     });
 
                 });
-        });
+        }
         $("#subjects").click(function () {
             var selectedSubject = $("#subjects").val();
+            document.cookie = "SubjectsCookie_TestMarks=" + selectedSubject + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+            TestMarksBySubjID(selectedSubject);
+        });
+
+        function TestMarksBySubjID(selectedSubject)
+        {
             $.get('@Url.Action("TestBySubject", "Teacher_Dashboard")',
                 { id: selectedSubject }, function (data) {
 
@@ -60,14 +122,13 @@
                     });
 
                 });
-        });
+        }
 
-        $("#test").click(function () {
-            var selectedTest = $("#test").val();
+        function TestMarksByTestID(selectedTest)
+        {
             $('#save_marks').prop('disabled', false);
             $('#TestMarks').prop('disabled', false);
             $('#Submit').prop('disabled', false);
-
             $.get('@Url.Action("SubmissionByTest", "Teacher_Dashboard")',
                 { id: selectedTest }, function (data) {
 
@@ -78,6 +139,13 @@
                     });
 
                 });
+        }
+        $("#test").click(function () {
+            var selectedTest = $("#test").val();
+            document.cookie = "TestCookie_TestMarks=" + selectedTest + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+            TestMarksByTestID(selectedTest);
+
+
         });
     });
 

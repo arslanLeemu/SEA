@@ -54,3 +54,92 @@
 }
 
 </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@model IEnumerable<SEA_Application.Models.Student_Assignment>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            $.get('@Url.Action("SubjectsByClass")',
+                { id: selectedClass }, function (data) {
+
+                    //alert(JSON.stringify(data));
+                    $('#subjects').html('');
+                    $('#subjects').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+       
+
+        $("#subjects").click(function () {
+            var selectedSubject = $("#subjects").val();
+            $.get('@Url.Action("StudentsBySubject", "Admin_Dashboard")',
+                { id: selectedSubject }, function (data) {
+
+                    $('#submission_table').html('');
+                    console.log(JSON.stringify(data));
+                    $.each(data, function (i, item) {
+
+                        $('#submission_table').append('<tr id=' + item.Email + '><td>' + item.UserName + '</td><td>' + item.Name + '</td><td>' + item.PhoneNumber +  '</td></tr>');
+
+                    });
+
+                });
+        });
+    });
+
+</script>
+<div class="container">
+    <form>
+        <div class="form-group">
+            <lable class="col-md-2 control-label"><b>Select Class</b></lable>
+            <div class="col-md-10">
+                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <br />
+            <label class="control-label col-md-2">Subjects</label>
+            <div class="col-md-10">
+                <select class="form-control" id="subjects" name="subjects" disabled></select>
+            </div>
+        </div>
+    </form>
+    <br />
+    <hr />
+    <hr>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Email
+                </th>
+                <th>
+                    User Name
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Phone Number
+                </th>
+            </tr>
+        </thead>
+        <tbody id="submission_table"></tbody>
+    </table>
+</div>*@

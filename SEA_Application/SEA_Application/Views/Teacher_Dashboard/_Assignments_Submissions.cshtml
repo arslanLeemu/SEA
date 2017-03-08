@@ -2,8 +2,109 @@
 <script src="~/Scripts/jquery-1.10.2.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+
+
+        var subjectcookieval = null;
+        var ClassCookie_AssignSubval = null;
+        var selectedAssignmentCookieVal = null;
+        var allcookies = document.cookie;
+
+        // Get all the cookies pairs in an array
+        cookiearray = allcookies.split(';');
+
+        // Now take key value pair out of this array
+        for (var i = 0; i < cookiearray.length; i++) {
+            name = cookiearray[i].split('=')[0];
+            value = cookiearray[i].split('=')[1];
+
+            console.log(cookiearray[i]);
+
+            if (cookiearray[i].split('=')[0] == " ClassCookie_AssignSub" || cookiearray[i].split('=')[0] == "ClassCookie_AssignSub") {
+                ClassCookie_AssignSubval = cookiearray[i].split('=')[1];
+
+            }
+
+            if (cookiearray[i].split('=')[0] == " SubjectsCookie_AssignSub" || cookiearray[i].split('=')[0] == "SubjectsCookie_AssignSub") {
+                subjectcookieval = cookiearray[i].split('=')[1];
+
+            }
+            if (cookiearray[i].split('=')[0] == " AssignmentCookie_AssignSub" || cookiearray[i].split('=')[0] == "AssignmentCookie_AssignSub") {
+                selectedAssignmentCookieVal = cookiearray[i].split('=')[1];
+
+            }
+        }
+        console.log("classval", ClassCookie_AssignSubval);
+
+        console.log("subval", subjectcookieval);
+        if (ClassCookie_AssignSubval != null && subjectcookieval != null) {
+
+            var selectClass = document.getElementById('ClassID');
+            selectClass.value = ClassCookie_AssignSubval;
+
+            $.get('@Url.Action("SubjectsByClass", "Teacher_Dashboard")',
+                    { id: ClassCookie_AssignSubval }, function (data) {
+                        //alert(JSON.stringify(data));
+                        $('#subjects').html('');
+                        $('#subjects').prop('disabled', false);
+                        $.each(data, function (i, item) {
+                            $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                        });
+                        $.get('@Url.Action("AssignmentsBySubject", "Teacher_Dashboard")',
+                            { id: subjectcookieval }, function (data) {
+
+                                $('#assignment').html('');
+                                $('#assignment').prop('disabled', false);
+                                $.each(data, function (i, item) {
+                                    $('#assignment').append('<option value=' + item.Id + '>' + item.Title + '</option>');
+                                });
+                                $('#save_marks').prop('disabled', false);
+                                $('#AssignmentMarks').prop('disabled', false);
+                                $('#Submit').prop('disabled', false);
+
+                                $.get('@Url.Action("SubmissionByAssignment", "Teacher_Dashboard")',
+                                { id: selectedAssignmentCookieVal }, function (data) {
+
+                                    $('#submission_table').html('');
+
+                                    $.each(data, function (i, item) {
+                                        var downloadfile = "";
+                                        if (item.assignmentsubmission.Status==="Submitted")
+                                        {
+                                            downloadfile = '<a href="/Teacher_Dashboard/Student_Assignment_Submitted_File?id=' + item.assignmentsubmission.Id + '">Download File</a>';
+                                        }
+                                        else
+                                        {
+                                            downloadfile = '-/-';
+                                        }
+                                        var date;
+
+                                        if (item.assignmentsubmission.Date ==null) {
+                                            date = '';
+                                        }
+                                        else
+                                        {
+                                            date = new Date(parseInt(item.assignmentsubmission.Date.replace(/(^.*\()|([+-].*$)/g, '')));
+                                            date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+                                        }
+
+
+                                        $('#submission_table').append('<tr id=' + item.assignmentsubmission.Id + '><td>' + item.Name + '</td><td>' + item.assignmentsubmission.Status + '</td><td>' + item.assignmentsubmission.SubmittedFileName + '</td><td>' + downloadfile + '</td><td>' + date + '</td></tr>');
+
+                                    });
+
+
+                                    });
+                            });
+                    });
+        }
+
+
+
+
+
         $("#ClassID").click(function () {
             var selectedClass = $("#ClassID").val();
+            document.cookie = "ClassCookie_AssignSub=" + selectedClass + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
             $.get('@Url.Action("SubjectsByClass")',
                 { id: selectedClass }, function (data) {
 
@@ -18,6 +119,7 @@
         });
         $("#subjects").click(function () {
             var selectedSubject = $("#subjects").val();
+            document.cookie = "SubjectsCookie_AssignSub=" + selectedSubject + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
             $.get('@Url.Action("AssignmentsBySubject", "Teacher_Dashboard")',
                 { id: selectedSubject }, function (data) {
 
@@ -32,11 +134,12 @@
 
         $("#assignment").click(function () {
             var selectedAssignment = $("#assignment").val();
+            document.cookie = "AssignmentCookie_AssignSub=" + selectedAssignment + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
             $.get('@Url.Action("SubmissionByAssignment", "Teacher_Dashboard")',
                 { id: selectedAssignment }, function (data) {
 
                     $('#submission_table').html('');
-                    
+
                     $.each(data, function (i, item) {
                         var downloadfile = "";
                         if (item.assignmentsubmission.Status==="Submitted")
@@ -48,7 +151,7 @@
                             downloadfile = '-/-';
                         }
                         var date;
-                        
+
                         if (item.assignmentsubmission.Date ==null) {
                             date = '';
                         }
@@ -57,8 +160,8 @@
                             date = new Date(parseInt(item.assignmentsubmission.Date.replace(/(^.*\()|([+-].*$)/g, '')));
                             date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
                         }
-                        
-                       
+
+
                         $('#submission_table').append('<tr id=' + item.assignmentsubmission.Id + '><td>' + item.Name + '</td><td>' + item.assignmentsubmission.Status + '</td><td>' + item.assignmentsubmission.SubmittedFileName + '</td><td>' + downloadfile + '</td><td>' + date + '</td></tr>');
 
                     });
@@ -69,28 +172,35 @@
 
 </script>
 <div class="container">
-    <form>
-        <div class="form-group">
-            <lable class="col-md-2 control-label"><b>Select Class</b></lable>
-            <div class="col-md-10">
-                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+    <div class="form-horizontal">
+        <div class="col-md-8">
+            
+            <div class="form-group">
+                <lable class="col-md-2 control-label"><b>Select Class</b></lable>
+                <div class="col-md-8">
+                    @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                </div>
             </div>
-            <br />
-            <label class="control-label col-md-2">Subjects</label>
-            <div class="col-md-10">
-                <select class="form-control" id="subjects" name="subjects" disabled></select>
+            <div class="form-group">
+                <label class="control-label col-md-2">Subjects</label>
+                <div class="col-md-8">
+                    <select class="form-control" id="subjects" name="subjects" disabled></select>
+                </div>
             </div>
-            <br />
-            <label class="control-label col-md-2">Assignment</label>
-            <div class="col-md-10">
-                <select class="form-control" id="assignment" name="assignment" disabled></select>
+            <div class="form-group">
+                <label class="control-label col-md-2">Assignment</label>
+                <div class="col-md-8">
+                    <select class="form-control" id="assignment" name="assignment" disabled></select>
+                </div>
             </div>
+          
+
         </div>
-    </form>
+    </div>
     <br />
     <hr />
-    <hr >
-   
+    <hr>
+
     <table class="table table-striped">
         <thead>
             <tr>

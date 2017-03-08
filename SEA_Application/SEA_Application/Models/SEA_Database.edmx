@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="SEA_DatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="SEA_Database.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AspNetAnnouncement">
           <Key>
             <PropertyRef Name="Id" />
@@ -64,28 +64,12 @@
           <Property Name="ClassName" Type="nvarchar(max)" />
           <Property Name="TeacherID" Type="nvarchar" MaxLength="128" />
         </EntityType>
-        <EntityType Name="AspNetClass_FeeType">
+        <EntityType Name="AspNetCurriculum">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ClassID" Type="int" />
-          <Property Name="FeeTypeID" Type="int" />
-          <Property Name="Amount" Type="int" />
-        </EntityType>
-        <EntityType Name="AspNetDiscountType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TypeName" Type="nvarchar(max)" />
-        </EntityType>
-        <EntityType Name="AspNetDurationType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TypeName" Type="nvarchar(max)" />
+          <Property Name="CurriculumName" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="AspNetExams">
           <Key>
@@ -101,41 +85,12 @@
           <Property Name="Weightage" Type="float" />
           <Property Name="TeacherID" Type="nvarchar" MaxLength="128" />
         </EntityType>
-        <EntityType Name="AspNetFeeChallan">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ClassID" Type="int" />
-          <Property Name="DueDate" Type="datetime" />
-          <Property Name="DurationTypeID" Type="int" />
-          <Property Name="TotalAmount" Type="int" />
-          <Property Name="StartDate" Type="date" />
-          <Property Name="EndDate" Type="date" />
-        </EntityType>
-        <EntityType Name="AspNetFeeType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TypeName" Type="nvarchar(max)" />
-        </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="256" Nullable="false" />
-        </EntityType>
-        <EntityType Name="AspNetSession">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SessionName" Type="nvarchar(max)" />
-          <Property Name="SessionStartDate" Type="date" />
-          <Property Name="SessionEndDate" Type="date" />
-          <Property Name="Status" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="AspNetStudent">
           <Key>
@@ -154,15 +109,6 @@
           <Property Name="AnnouncementID" Type="int" />
           <Property Name="Seen" Type="bit" />
         </EntityType>
-        <EntityType Name="AspNetStudent_Discount">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="StudentID" Type="nvarchar" MaxLength="128" />
-          <Property Name="DiscountID" Type="int" />
-          <Property Name="Percentage" Type="int" />
-        </EntityType>
         <EntityType Name="AspNetStudent_Exam">
           <Key>
             <PropertyRef Name="Id" />
@@ -171,16 +117,6 @@
           <Property Name="StudentID" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ExamID" Type="int" Nullable="false" />
           <Property Name="MarksGot" Type="float" />
-        </EntityType>
-        <EntityType Name="AspNetStudent_Payment">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="StudentID" Type="nvarchar" MaxLength="128" />
-          <Property Name="FeeChallanID" Type="int" />
-          <Property Name="PaymentAmount" Type="int" />
-          <Property Name="PaymentDate" Type="datetime" />
         </EntityType>
         <EntityType Name="AspNetStudent_Subject">
           <Key>
@@ -199,6 +135,15 @@
           <Property Name="TestID" Type="int" Nullable="false" />
           <Property Name="MarksGot" Type="float" />
         </EntityType>
+        <EntityType Name="AspNetSubject_Curriculum">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WeightageValue" Type="int" />
+          <Property Name="CurriculumID" Type="int" />
+          <Property Name="SubjectID" Type="int" />
+        </EntityType>
         <EntityType Name="AspNetSubjects">
           <Key>
             <PropertyRef Name="Id" />
@@ -215,17 +160,6 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TeacherID" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="JoiningDate" Type="date" />
-        </EntityType>
-        <EntityType Name="AspNetTerm">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TermName" Type="nvarchar(max)" />
-          <Property Name="SessionID" Type="int" />
-          <Property Name="TermStartDate" Type="date" />
-          <Property Name="TermEndDate" Type="date" />
-          <Property Name="Status" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="AspNetTest">
           <Key>
@@ -390,30 +324,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AspNetClass_FeeType_ToClass">
-          <End Role="AspNetClass" Type="Self.AspNetClass" Multiplicity="0..1" />
-          <End Role="AspNetClass_FeeType" Type="Self.AspNetClass_FeeType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetClass">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetClass_FeeType">
-              <PropertyRef Name="ClassID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetClass_FeeType_ToFeeType">
-          <End Role="AspNetFeeType" Type="Self.AspNetFeeType" Multiplicity="0..1" />
-          <End Role="AspNetClass_FeeType" Type="Self.AspNetClass_FeeType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetFeeType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetClass_FeeType">
-              <PropertyRef Name="FeeTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_AspNetClass_ToAspNetClass">
           <End Role="AspNetClass" Type="Self.AspNetClass" Multiplicity="0..1" />
           <End Role="AspNetSubjects" Type="Self.AspNetSubjects" Multiplicity="*" />
@@ -450,54 +360,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AspNetFeeChallan_ToClass">
-          <End Role="AspNetClass" Type="Self.AspNetClass" Multiplicity="0..1" />
-          <End Role="AspNetFeeChallan" Type="Self.AspNetFeeChallan" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetClass">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetFeeChallan">
-              <PropertyRef Name="ClassID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetFeeChallan_ToDurationType">
-          <End Role="AspNetDurationType" Type="Self.AspNetDurationType" Multiplicity="0..1" />
-          <End Role="AspNetFeeChallan" Type="Self.AspNetFeeChallan" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetDurationType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetFeeChallan">
-              <PropertyRef Name="DurationTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetStudent_Discount_ToDiscount">
-          <End Role="AspNetDiscountType" Type="Self.AspNetDiscountType" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Discount" Type="Self.AspNetStudent_Discount" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetDiscountType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Discount">
-              <PropertyRef Name="DiscountID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetStudent_Discount_ToStudent">
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Discount" Type="Self.AspNetStudent_Discount" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Discount">
-              <PropertyRef Name="StudentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_AspNetStudent_Exam_ToExam">
           <End Role="AspNetExams" Type="Self.AspNetExams" Multiplicity="1" />
           <End Role="AspNetStudent_Exam" Type="Self.AspNetStudent_Exam" Multiplicity="*" />
@@ -507,30 +369,6 @@
             </Principal>
             <Dependent Role="AspNetStudent_Exam">
               <PropertyRef Name="ExamID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetStudent_Payment_ToSFeeChallan">
-          <End Role="AspNetFeeChallan" Type="Self.AspNetFeeChallan" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Payment" Type="Self.AspNetStudent_Payment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetFeeChallan">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Payment">
-              <PropertyRef Name="FeeChallanID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetStudent_Payment_ToStudent">
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Payment" Type="Self.AspNetStudent_Payment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Payment">
-              <PropertyRef Name="StudentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -570,15 +408,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AspNetTerm_ToSession">
-          <End Role="AspNetSession" Type="Self.AspNetSession" Multiplicity="0..1" />
-          <End Role="AspNetTerm" Type="Self.AspNetTerm" Multiplicity="*" />
+        <Association Name="FK_AspNetSubject_ToAspNetCurriculum">
+          <End Role="AspNetCurriculum" Type="Self.AspNetCurriculum" Multiplicity="0..1" />
+          <End Role="AspNetSubject_Curriculum" Type="Self.AspNetSubject_Curriculum" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetSession">
+            <Principal Role="AspNetCurriculum">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AspNetTerm">
-              <PropertyRef Name="SessionID" />
+            <Dependent Role="AspNetSubject_Curriculum">
+              <PropertyRef Name="CurriculumID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AspNetSubject_ToAspNetSubjects">
+          <End Role="AspNetSubjects" Type="Self.AspNetSubjects" Multiplicity="0..1" />
+          <End Role="AspNetSubject_Curriculum" Type="Self.AspNetSubject_Curriculum" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetSubjects">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetSubject_Curriculum">
+              <PropertyRef Name="SubjectID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -894,31 +744,24 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="SEA_DatabaseModelStoreContainer">
+        <EntityContainer Name="SEA_DatabaseStoreContainer">
           <EntitySet Name="AspNetAnnouncement" EntityType="Self.AspNetAnnouncement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetAnnouncement_Subject" EntityType="Self.AspNetAnnouncement_Subject" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetAssignment" EntityType="Self.AspNetAssignment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetAssignment_Topic" EntityType="Self.AspNetAssignment_Topic" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetAttendance" EntityType="Self.AspNetAttendance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetClass" EntityType="Self.AspNetClass" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetClass_FeeType" EntityType="Self.AspNetClass_FeeType" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetDiscountType" EntityType="Self.AspNetDiscountType" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetDurationType" EntityType="Self.AspNetDurationType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetCurriculum" EntityType="Self.AspNetCurriculum" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetExams" EntityType="Self.AspNetExams" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetFeeChallan" EntityType="Self.AspNetFeeChallan" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetFeeType" EntityType="Self.AspNetFeeType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetSession" EntityType="Self.AspNetSession" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetStudent" EntityType="Self.AspNetStudent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetStudent_Announcement" EntityType="Self.AspNetStudent_Announcement" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetStudent_Discount" EntityType="Self.AspNetStudent_Discount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetStudent_Exam" EntityType="Self.AspNetStudent_Exam" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetStudent_Payment" EntityType="Self.AspNetStudent_Payment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetStudent_Subject" EntityType="Self.AspNetStudent_Subject" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetStudent_Test" EntityType="Self.AspNetStudent_Test" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetSubject_Curriculum" EntityType="Self.AspNetSubject_Curriculum" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetSubjects" EntityType="Self.AspNetSubjects" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetTeacher" EntityType="Self.AspNetTeacher" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetTerm" EntityType="Self.AspNetTerm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetTest" EntityType="Self.AspNetTest" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetTest_Topic" EntityType="Self.AspNetTest_Topic" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetTopic" EntityType="Self.AspNetTopic" Schema="dbo" store:Type="Tables" />
@@ -951,14 +794,6 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetAttendance" EntitySet="AspNetAttendance" />
           </AssociationSet>
-          <AssociationSet Name="FK_AspNetClass_FeeType_ToClass" Association="Self.FK_AspNetClass_FeeType_ToClass">
-            <End Role="AspNetClass" EntitySet="AspNetClass" />
-            <End Role="AspNetClass_FeeType" EntitySet="AspNetClass_FeeType" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetClass_FeeType_ToFeeType" Association="Self.FK_AspNetClass_FeeType_ToFeeType">
-            <End Role="AspNetFeeType" EntitySet="AspNetFeeType" />
-            <End Role="AspNetClass_FeeType" EntitySet="AspNetClass_FeeType" />
-          </AssociationSet>
           <AssociationSet Name="FK_AspNetClass_ToAspNetClass" Association="Self.FK_AspNetClass_ToAspNetClass">
             <End Role="AspNetClass" EntitySet="AspNetClass" />
             <End Role="AspNetSubjects" EntitySet="AspNetSubjects" />
@@ -971,33 +806,9 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetSubjects" EntitySet="AspNetSubjects" />
           </AssociationSet>
-          <AssociationSet Name="FK_AspNetFeeChallan_ToClass" Association="Self.FK_AspNetFeeChallan_ToClass">
-            <End Role="AspNetClass" EntitySet="AspNetClass" />
-            <End Role="AspNetFeeChallan" EntitySet="AspNetFeeChallan" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetFeeChallan_ToDurationType" Association="Self.FK_AspNetFeeChallan_ToDurationType">
-            <End Role="AspNetDurationType" EntitySet="AspNetDurationType" />
-            <End Role="AspNetFeeChallan" EntitySet="AspNetFeeChallan" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Discount_ToDiscount" Association="Self.FK_AspNetStudent_Discount_ToDiscount">
-            <End Role="AspNetDiscountType" EntitySet="AspNetDiscountType" />
-            <End Role="AspNetStudent_Discount" EntitySet="AspNetStudent_Discount" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Discount_ToStudent" Association="Self.FK_AspNetStudent_Discount_ToStudent">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetStudent_Discount" EntitySet="AspNetStudent_Discount" />
-          </AssociationSet>
           <AssociationSet Name="FK_AspNetStudent_Exam_ToExam" Association="Self.FK_AspNetStudent_Exam_ToExam">
             <End Role="AspNetExams" EntitySet="AspNetExams" />
             <End Role="AspNetStudent_Exam" EntitySet="AspNetStudent_Exam" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Payment_ToSFeeChallan" Association="Self.FK_AspNetStudent_Payment_ToSFeeChallan">
-            <End Role="AspNetFeeChallan" EntitySet="AspNetFeeChallan" />
-            <End Role="AspNetStudent_Payment" EntitySet="AspNetStudent_Payment" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Payment_ToStudent" Association="Self.FK_AspNetStudent_Payment_ToStudent">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetStudent_Payment" EntitySet="AspNetStudent_Payment" />
           </AssociationSet>
           <AssociationSet Name="FK_AspNetStudent_Test_ToStudent" Association="Self.FK_AspNetStudent_Test_ToStudent">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -1011,9 +822,13 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetStudent_Exam" EntitySet="AspNetStudent_Exam" />
           </AssociationSet>
-          <AssociationSet Name="FK_AspNetTerm_ToSession" Association="Self.FK_AspNetTerm_ToSession">
-            <End Role="AspNetSession" EntitySet="AspNetSession" />
-            <End Role="AspNetTerm" EntitySet="AspNetTerm" />
+          <AssociationSet Name="FK_AspNetSubject_ToAspNetCurriculum" Association="Self.FK_AspNetSubject_ToAspNetCurriculum">
+            <End Role="AspNetCurriculum" EntitySet="AspNetCurriculum" />
+            <End Role="AspNetSubject_Curriculum" EntitySet="AspNetSubject_Curriculum" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AspNetSubject_ToAspNetSubjects" Association="Self.FK_AspNetSubject_ToAspNetSubjects">
+            <End Role="AspNetSubjects" EntitySet="AspNetSubjects" />
+            <End Role="AspNetSubject_Curriculum" EntitySet="AspNetSubject_Curriculum" />
           </AssociationSet>
           <AssociationSet Name="FK_AspNetTest_Topic_ToTest" Association="Self.FK_AspNetTest_Topic_ToTest">
             <End Role="AspNetTest" EntitySet="AspNetTest" />
@@ -1120,7 +935,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="SEA_DatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="SEA_Database" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="AspNetAnnouncement">
           <Key>
             <PropertyRef Name="Id" />
@@ -1193,40 +1008,19 @@
           <Property Name="ClassName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="TeacherID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetAssignments" Relationship="Self.FK_Assignment_ToClass" FromRole="AspNetClass" ToRole="AspNetAssignment" />
-          <NavigationProperty Name="AspNetClass_FeeType" Relationship="Self.FK_AspNetClass_FeeType_ToClass" FromRole="AspNetClass" ToRole="AspNetClass_FeeType" />
           <NavigationProperty Name="AspNetSubjects" Relationship="Self.FK_AspNetClass_ToAspNetClass" FromRole="AspNetClass" ToRole="AspNetSubjects" />
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_AspNetClass_ToAspNetUsers" FromRole="AspNetClass" ToRole="AspNetUsers" />
-          <NavigationProperty Name="AspNetFeeChallans" Relationship="Self.FK_AspNetFeeChallan_ToClass" FromRole="AspNetClass" ToRole="AspNetFeeChallan" />
           <NavigationProperty Name="AspNetExams" Relationship="Self.FK_Exams_ToClass" FromRole="AspNetClass" ToRole="AspNetExams" />
           <NavigationProperty Name="AspNetStudents" Relationship="Self.FK_Student_ToAspNetClass" FromRole="AspNetClass" ToRole="AspNetStudent" />
           <NavigationProperty Name="AspNetTests" Relationship="Self.FK_Test_ToClass" FromRole="AspNetClass" ToRole="AspNetTest" />
         </EntityType>
-        <EntityType Name="AspNetClass_FeeType">
+        <EntityType Name="AspNetCurriculum">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ClassID" Type="Int32" />
-          <Property Name="FeeTypeID" Type="Int32" />
-          <Property Name="Amount" Type="Int32" />
-          <NavigationProperty Name="AspNetClass" Relationship="Self.FK_AspNetClass_FeeType_ToClass" FromRole="AspNetClass_FeeType" ToRole="AspNetClass" />
-          <NavigationProperty Name="AspNetFeeType" Relationship="Self.FK_AspNetClass_FeeType_ToFeeType" FromRole="AspNetClass_FeeType" ToRole="AspNetFeeType" />
-        </EntityType>
-        <EntityType Name="AspNetDiscountType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TypeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetStudent_Discount" Relationship="Self.FK_AspNetStudent_Discount_ToDiscount" FromRole="AspNetDiscountType" ToRole="AspNetStudent_Discount" />
-        </EntityType>
-        <EntityType Name="AspNetDurationType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TypeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetFeeChallans" Relationship="Self.FK_AspNetFeeChallan_ToDurationType" FromRole="AspNetDurationType" ToRole="AspNetFeeChallan" />
+          <Property Name="CurriculumName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="AspNetSubject_Curriculum" Relationship="Self.FK_AspNetSubject_ToAspNetCurriculum" FromRole="AspNetCurriculum" ToRole="AspNetSubject_Curriculum" />
         </EntityType>
         <EntityType Name="AspNetExam">
           <Key>
@@ -1246,29 +1040,6 @@
           <NavigationProperty Name="AspNetSubject" Relationship="Self.FK_Exams_ToSubject" FromRole="AspNetExams" ToRole="AspNetSubjects" />
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_Exams_ToTeacher" FromRole="AspNetExams" ToRole="AspNetUsers" />
         </EntityType>
-        <EntityType Name="AspNetFeeChallan">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ClassID" Type="Int32" />
-          <Property Name="DueDate" Type="DateTime" Precision="3" />
-          <Property Name="DurationTypeID" Type="Int32" />
-          <Property Name="TotalAmount" Type="Int32" />
-          <Property Name="StartDate" Type="DateTime" Precision="0" />
-          <Property Name="EndDate" Type="DateTime" Precision="0" />
-          <NavigationProperty Name="AspNetClass" Relationship="Self.FK_AspNetFeeChallan_ToClass" FromRole="AspNetFeeChallan" ToRole="AspNetClass" />
-          <NavigationProperty Name="AspNetDurationType" Relationship="Self.FK_AspNetFeeChallan_ToDurationType" FromRole="AspNetFeeChallan" ToRole="AspNetDurationType" />
-          <NavigationProperty Name="AspNetStudent_Payment" Relationship="Self.FK_AspNetStudent_Payment_ToSFeeChallan" FromRole="AspNetFeeChallan" ToRole="AspNetStudent_Payment" />
-        </EntityType>
-        <EntityType Name="AspNetFeeType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TypeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetClass_FeeType" Relationship="Self.FK_AspNetClass_FeeType_ToFeeType" FromRole="AspNetFeeType" ToRole="AspNetClass_FeeType" />
-        </EntityType>
         <EntityType Name="AspNetRole">
           <Key>
             <PropertyRef Name="Id" />
@@ -1276,17 +1047,6 @@
           <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="AspNetUsers" Relationship="Self.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
-        </EntityType>
-        <EntityType Name="AspNetSession">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SessionName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="SessionStartDate" Type="DateTime" Precision="0" />
-          <Property Name="SessionEndDate" Type="DateTime" Precision="0" />
-          <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetTerms" Relationship="Self.FK_AspNetTerm_ToSession" FromRole="AspNetSession" ToRole="AspNetTerm" />
         </EntityType>
         <EntityType Name="AspNetStudent">
           <Key>
@@ -1309,17 +1069,6 @@
           <NavigationProperty Name="AspNetAnnouncement" Relationship="Self.FK_Student_Announcement_ToAnnouncement" FromRole="AspNetStudent_Announcement" ToRole="AspNetAnnouncement" />
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_Student_Announcement_ToStudent" FromRole="AspNetStudent_Announcement" ToRole="AspNetUsers" />
         </EntityType>
-        <EntityType Name="AspNetStudent_Discount">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="StudentID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="DiscountID" Type="Int32" />
-          <Property Name="Percentage" Type="Int32" />
-          <NavigationProperty Name="AspNetDiscountType" Relationship="Self.FK_AspNetStudent_Discount_ToDiscount" FromRole="AspNetStudent_Discount" ToRole="AspNetDiscountType" />
-          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_AspNetStudent_Discount_ToStudent" FromRole="AspNetStudent_Discount" ToRole="AspNetUsers" />
-        </EntityType>
         <EntityType Name="AspNetStudent_Exam">
           <Key>
             <PropertyRef Name="Id" />
@@ -1330,18 +1079,6 @@
           <Property Name="MarksGot" Type="Double" />
           <NavigationProperty Name="AspNetExam" Relationship="Self.FK_AspNetStudent_Exam_ToExam" FromRole="AspNetStudent_Exam" ToRole="AspNetExams" />
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_AspNetStudent_ToStudent" FromRole="AspNetStudent_Exam" ToRole="AspNetUsers" />
-        </EntityType>
-        <EntityType Name="AspNetStudent_Payment">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="StudentID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="FeeChallanID" Type="Int32" />
-          <Property Name="PaymentAmount" Type="Int32" />
-          <Property Name="PaymentDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="AspNetFeeChallan" Relationship="Self.FK_AspNetStudent_Payment_ToSFeeChallan" FromRole="AspNetStudent_Payment" ToRole="AspNetFeeChallan" />
-          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_AspNetStudent_Payment_ToStudent" FromRole="AspNetStudent_Payment" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetStudent_Subject">
           <Key>
@@ -1364,6 +1101,17 @@
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_AspNetStudent_Test_ToStudent" FromRole="AspNetStudent_Test" ToRole="AspNetUsers" />
           <NavigationProperty Name="AspNetTest" Relationship="Self.FK_AspNetStudent_Test_ToTest" FromRole="AspNetStudent_Test" ToRole="AspNetTest" />
         </EntityType>
+        <EntityType Name="AspNetSubject_Curriculum">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WeightageValue" Type="Int32" />
+          <Property Name="CurriculumID" Type="Int32" />
+          <Property Name="SubjectID" Type="Int32" />
+          <NavigationProperty Name="AspNetCurriculum" Relationship="Self.FK_AspNetSubject_ToAspNetCurriculum" FromRole="AspNetSubject_Curriculum" ToRole="AspNetCurriculum" />
+          <NavigationProperty Name="AspNetSubject" Relationship="Self.FK_AspNetSubject_ToAspNetSubjects" FromRole="AspNetSubject_Curriculum" ToRole="AspNetSubjects" />
+        </EntityType>
         <EntityType Name="AspNetSubject">
           <Key>
             <PropertyRef Name="Id" />
@@ -1378,6 +1126,7 @@
           <NavigationProperty Name="AspNetClass" Relationship="Self.FK_AspNetClass_ToAspNetClass" FromRole="AspNetSubjects" ToRole="AspNetClass" />
           <NavigationProperty Name="AspNetExams" Relationship="Self.FK_Exams_ToSubject" FromRole="AspNetSubjects" ToRole="AspNetExams" />
           <NavigationProperty Name="AspNetStudent_Subject" Relationship="Self.FK_Student_Subject_ToSubject" FromRole="AspNetSubjects" ToRole="AspNetStudent_Subject" />
+          <NavigationProperty Name="AspNetSubject_Curriculum" Relationship="Self.FK_AspNetSubject_ToAspNetSubjects" FromRole="AspNetSubjects" ToRole="AspNetSubject_Curriculum" />
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_AspNetClass_ToAspNetUsersTeacher" FromRole="AspNetSubjects" ToRole="AspNetUsers" />
           <NavigationProperty Name="AspNetTopics" Relationship="Self.FK_AspNetTopic_ToSubject" FromRole="AspNetSubjects" ToRole="AspNetTopic" />
           <NavigationProperty Name="AspNetTests" Relationship="Self.FK_Test_ToSubject" FromRole="AspNetSubjects" ToRole="AspNetTest" />
@@ -1390,18 +1139,6 @@
           <Property Name="TeacherID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="JoiningDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_Teacher_ToAspNetUsers" FromRole="AspNetTeacher" ToRole="AspNetUsers" />
-        </EntityType>
-        <EntityType Name="AspNetTerm">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TermName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="SessionID" Type="Int32" />
-          <Property Name="TermStartDate" Type="DateTime" Precision="0" />
-          <Property Name="TermEndDate" Type="DateTime" Precision="0" />
-          <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetSession" Relationship="Self.FK_AspNetTerm_ToSession" FromRole="AspNetTerm" ToRole="AspNetSession" />
         </EntityType>
         <EntityType Name="AspNetTest">
           <Key>
@@ -1486,9 +1223,7 @@
           <NavigationProperty Name="AspNetExams" Relationship="Self.FK_Exams_ToTeacher" FromRole="AspNetUsers" ToRole="AspNetExams" />
           <NavigationProperty Name="AspNetStudents" Relationship="Self.FK_Student_ToAspNetUsers" FromRole="AspNetUsers" ToRole="AspNetStudent" />
           <NavigationProperty Name="AspNetStudent_Announcement" Relationship="Self.FK_Student_Announcement_ToStudent" FromRole="AspNetUsers" ToRole="AspNetStudent_Announcement" />
-          <NavigationProperty Name="AspNetStudent_Discount" Relationship="Self.FK_AspNetStudent_Discount_ToStudent" FromRole="AspNetUsers" ToRole="AspNetStudent_Discount" />
           <NavigationProperty Name="AspNetStudent_Exam" Relationship="Self.FK_AspNetStudent_ToStudent" FromRole="AspNetUsers" ToRole="AspNetStudent_Exam" />
-          <NavigationProperty Name="AspNetStudent_Payment" Relationship="Self.FK_AspNetStudent_Payment_ToStudent" FromRole="AspNetUsers" ToRole="AspNetStudent_Payment" />
           <NavigationProperty Name="AspNetStudent_Subject" Relationship="Self.FK_Student_Subject_ToStudent" FromRole="AspNetUsers" ToRole="AspNetStudent_Subject" />
           <NavigationProperty Name="AspNetStudent_Test" Relationship="Self.FK_AspNetStudent_Test_ToStudent" FromRole="AspNetUsers" ToRole="AspNetStudent_Test" />
           <NavigationProperty Name="AspNetSubjects" Relationship="Self.FK_AspNetClass_ToAspNetUsersTeacher" FromRole="AspNetUsers" ToRole="AspNetSubjects" />
@@ -1650,18 +1385,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AspNetClass_FeeType_ToClass">
-          <End Role="AspNetClass" Type="Self.AspNetClass" Multiplicity="0..1" />
-          <End Role="AspNetClass_FeeType" Type="Self.AspNetClass_FeeType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetClass">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetClass_FeeType">
-              <PropertyRef Name="ClassID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_AspNetClass_ToAspNetClass">
           <End Role="AspNetClass" Type="Self.AspNetClass" Multiplicity="0..1" />
           <End Role="AspNetSubjects" Type="Self.AspNetSubject" Multiplicity="*" />
@@ -1683,18 +1406,6 @@
             </Principal>
             <Dependent Role="AspNetClass">
               <PropertyRef Name="TeacherID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetFeeChallan_ToClass">
-          <End Role="AspNetClass" Type="Self.AspNetClass" Multiplicity="0..1" />
-          <End Role="AspNetFeeChallan" Type="Self.AspNetFeeChallan" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetClass">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetFeeChallan">
-              <PropertyRef Name="ClassID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1734,39 +1445,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AspNetClass_FeeType_ToFeeType">
-          <End Role="AspNetFeeType" Type="Self.AspNetFeeType" Multiplicity="0..1" />
-          <End Role="AspNetClass_FeeType" Type="Self.AspNetClass_FeeType" Multiplicity="*" />
+        <Association Name="FK_AspNetSubject_ToAspNetCurriculum">
+          <End Role="AspNetCurriculum" Type="Self.AspNetCurriculum" Multiplicity="0..1" />
+          <End Role="AspNetSubject_Curriculum" Type="Self.AspNetSubject_Curriculum" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetFeeType">
+            <Principal Role="AspNetCurriculum">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AspNetClass_FeeType">
-              <PropertyRef Name="FeeTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetStudent_Discount_ToDiscount">
-          <End Role="AspNetDiscountType" Type="Self.AspNetDiscountType" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Discount" Type="Self.AspNetStudent_Discount" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetDiscountType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Discount">
-              <PropertyRef Name="DiscountID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetFeeChallan_ToDurationType">
-          <End Role="AspNetDurationType" Type="Self.AspNetDurationType" Multiplicity="0..1" />
-          <End Role="AspNetFeeChallan" Type="Self.AspNetFeeChallan" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetDurationType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetFeeChallan">
-              <PropertyRef Name="DurationTypeID" />
+            <Dependent Role="AspNetSubject_Curriculum">
+              <PropertyRef Name="CurriculumID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1806,30 +1493,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AspNetStudent_Payment_ToSFeeChallan">
-          <End Role="AspNetFeeChallan" Type="Self.AspNetFeeChallan" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Payment" Type="Self.AspNetStudent_Payment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetFeeChallan">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Payment">
-              <PropertyRef Name="FeeChallanID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetTerm_ToSession">
-          <End Role="AspNetSession" Type="Self.AspNetSession" Multiplicity="0..1" />
-          <End Role="AspNetTerm" Type="Self.AspNetTerm" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetSession">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetTerm">
-              <PropertyRef Name="SessionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Student_ToAspNetUsers">
           <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1" />
           <End Role="AspNetStudent" Type="Self.AspNetStudent" Multiplicity="*" />
@@ -1854,18 +1517,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AspNetStudent_Discount_ToStudent">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Discount" Type="Self.AspNetStudent_Discount" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Discount">
-              <PropertyRef Name="StudentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_AspNetStudent_ToStudent">
           <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1" />
           <End Role="AspNetStudent_Exam" Type="Self.AspNetStudent_Exam" Multiplicity="*" />
@@ -1874,18 +1525,6 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="AspNetStudent_Exam">
-              <PropertyRef Name="StudentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetStudent_Payment_ToStudent">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="AspNetStudent_Payment" Type="Self.AspNetStudent_Payment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetStudent_Payment">
               <PropertyRef Name="StudentID" />
             </Dependent>
           </ReferentialConstraint>
@@ -1935,6 +1574,18 @@
             </Principal>
             <Dependent Role="AspNetStudent_Test">
               <PropertyRef Name="TestID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AspNetSubject_ToAspNetSubjects">
+          <End Role="AspNetSubjects" Type="Self.AspNetSubject" Multiplicity="0..1" />
+          <End Role="AspNetSubject_Curriculum" Type="Self.AspNetSubject_Curriculum" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetSubjects">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetSubject_Curriculum">
+              <PropertyRef Name="SubjectID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2077,24 +1728,17 @@
           <EntitySet Name="AspNetAssignment_Topic" EntityType="Self.AspNetAssignment_Topic" />
           <EntitySet Name="AspNetAttendances" EntityType="Self.AspNetAttendance" />
           <EntitySet Name="AspNetClasses" EntityType="Self.AspNetClass" />
-          <EntitySet Name="AspNetClass_FeeType" EntityType="Self.AspNetClass_FeeType" />
-          <EntitySet Name="AspNetDiscountTypes" EntityType="Self.AspNetDiscountType" />
-          <EntitySet Name="AspNetDurationTypes" EntityType="Self.AspNetDurationType" />
+          <EntitySet Name="AspNetCurriculums" EntityType="Self.AspNetCurriculum" />
           <EntitySet Name="AspNetExams" EntityType="Self.AspNetExam" />
-          <EntitySet Name="AspNetFeeChallans" EntityType="Self.AspNetFeeChallan" />
-          <EntitySet Name="AspNetFeeTypes" EntityType="Self.AspNetFeeType" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRole" />
-          <EntitySet Name="AspNetSessions" EntityType="Self.AspNetSession" />
           <EntitySet Name="AspNetStudents" EntityType="Self.AspNetStudent" />
           <EntitySet Name="AspNetStudent_Announcement" EntityType="Self.AspNetStudent_Announcement" />
-          <EntitySet Name="AspNetStudent_Discount" EntityType="Self.AspNetStudent_Discount" />
           <EntitySet Name="AspNetStudent_Exam" EntityType="Self.AspNetStudent_Exam" />
-          <EntitySet Name="AspNetStudent_Payment" EntityType="Self.AspNetStudent_Payment" />
           <EntitySet Name="AspNetStudent_Subject" EntityType="Self.AspNetStudent_Subject" />
           <EntitySet Name="AspNetStudent_Test" EntityType="Self.AspNetStudent_Test" />
+          <EntitySet Name="AspNetSubject_Curriculum" EntityType="Self.AspNetSubject_Curriculum" />
           <EntitySet Name="AspNetSubjects" EntityType="Self.AspNetSubject" />
           <EntitySet Name="AspNetTeachers" EntityType="Self.AspNetTeacher" />
-          <EntitySet Name="AspNetTerms" EntityType="Self.AspNetTerm" />
           <EntitySet Name="AspNetTests" EntityType="Self.AspNetTest" />
           <EntitySet Name="AspNetTest_Topic" EntityType="Self.AspNetTest_Topic" />
           <EntitySet Name="AspNetTopics" EntityType="Self.AspNetTopic" />
@@ -2146,10 +1790,6 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetAttendance" EntitySet="AspNetAttendances" />
           </AssociationSet>
-          <AssociationSet Name="FK_AspNetClass_FeeType_ToClass" Association="Self.FK_AspNetClass_FeeType_ToClass">
-            <End Role="AspNetClass" EntitySet="AspNetClasses" />
-            <End Role="AspNetClass_FeeType" EntitySet="AspNetClass_FeeType" />
-          </AssociationSet>
           <AssociationSet Name="FK_AspNetClass_ToAspNetClass" Association="Self.FK_AspNetClass_ToAspNetClass">
             <End Role="AspNetClass" EntitySet="AspNetClasses" />
             <End Role="AspNetSubjects" EntitySet="AspNetSubjects" />
@@ -2157,10 +1797,6 @@
           <AssociationSet Name="FK_AspNetClass_ToAspNetUsers" Association="Self.FK_AspNetClass_ToAspNetUsers">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetClass" EntitySet="AspNetClasses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetFeeChallan_ToClass" Association="Self.FK_AspNetFeeChallan_ToClass">
-            <End Role="AspNetClass" EntitySet="AspNetClasses" />
-            <End Role="AspNetFeeChallan" EntitySet="AspNetFeeChallans" />
           </AssociationSet>
           <AssociationSet Name="FK_Exams_ToClass" Association="Self.FK_Exams_ToClass">
             <End Role="AspNetClass" EntitySet="AspNetClasses" />
@@ -2174,17 +1810,9 @@
             <End Role="AspNetClass" EntitySet="AspNetClasses" />
             <End Role="AspNetTest" EntitySet="AspNetTests" />
           </AssociationSet>
-          <AssociationSet Name="FK_AspNetClass_FeeType_ToFeeType" Association="Self.FK_AspNetClass_FeeType_ToFeeType">
-            <End Role="AspNetFeeType" EntitySet="AspNetFeeTypes" />
-            <End Role="AspNetClass_FeeType" EntitySet="AspNetClass_FeeType" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Discount_ToDiscount" Association="Self.FK_AspNetStudent_Discount_ToDiscount">
-            <End Role="AspNetDiscountType" EntitySet="AspNetDiscountTypes" />
-            <End Role="AspNetStudent_Discount" EntitySet="AspNetStudent_Discount" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetFeeChallan_ToDurationType" Association="Self.FK_AspNetFeeChallan_ToDurationType">
-            <End Role="AspNetDurationType" EntitySet="AspNetDurationTypes" />
-            <End Role="AspNetFeeChallan" EntitySet="AspNetFeeChallans" />
+          <AssociationSet Name="FK_AspNetSubject_ToAspNetCurriculum" Association="Self.FK_AspNetSubject_ToAspNetCurriculum">
+            <End Role="AspNetCurriculum" EntitySet="AspNetCurriculums" />
+            <End Role="AspNetSubject_Curriculum" EntitySet="AspNetSubject_Curriculum" />
           </AssociationSet>
           <AssociationSet Name="FK_AspNetStudent_Exam_ToExam" Association="Self.FK_AspNetStudent_Exam_ToExam">
             <End Role="AspNetExams" EntitySet="AspNetExams" />
@@ -2198,14 +1826,6 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetExams" EntitySet="AspNetExams" />
           </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Payment_ToSFeeChallan" Association="Self.FK_AspNetStudent_Payment_ToSFeeChallan">
-            <End Role="AspNetFeeChallan" EntitySet="AspNetFeeChallans" />
-            <End Role="AspNetStudent_Payment" EntitySet="AspNetStudent_Payment" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetTerm_ToSession" Association="Self.FK_AspNetTerm_ToSession">
-            <End Role="AspNetSession" EntitySet="AspNetSessions" />
-            <End Role="AspNetTerm" EntitySet="AspNetTerms" />
-          </AssociationSet>
           <AssociationSet Name="FK_Student_ToAspNetUsers" Association="Self.FK_Student_ToAspNetUsers">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetStudent" EntitySet="AspNetStudents" />
@@ -2214,17 +1834,9 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetStudent_Announcement" EntitySet="AspNetStudent_Announcement" />
           </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Discount_ToStudent" Association="Self.FK_AspNetStudent_Discount_ToStudent">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetStudent_Discount" EntitySet="AspNetStudent_Discount" />
-          </AssociationSet>
           <AssociationSet Name="FK_AspNetStudent_ToStudent" Association="Self.FK_AspNetStudent_ToStudent">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetStudent_Exam" EntitySet="AspNetStudent_Exam" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetStudent_Payment_ToStudent" Association="Self.FK_AspNetStudent_Payment_ToStudent">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetStudent_Payment" EntitySet="AspNetStudent_Payment" />
           </AssociationSet>
           <AssociationSet Name="FK_Student_Subject_ToStudent" Association="Self.FK_Student_Subject_ToStudent">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -2241,6 +1853,10 @@
           <AssociationSet Name="FK_AspNetStudent_Test_ToTest" Association="Self.FK_AspNetStudent_Test_ToTest">
             <End Role="AspNetTest" EntitySet="AspNetTests" />
             <End Role="AspNetStudent_Test" EntitySet="AspNetStudent_Test" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AspNetSubject_ToAspNetSubjects" Association="Self.FK_AspNetSubject_ToAspNetSubjects">
+            <End Role="AspNetSubjects" EntitySet="AspNetSubjects" />
+            <End Role="AspNetSubject_Curriculum" EntitySet="AspNetSubject_Curriculum" />
           </AssociationSet>
           <AssociationSet Name="FK_AspNetClass_ToAspNetUsersTeacher" Association="Self.FK_AspNetClass_ToAspNetUsersTeacher">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -2292,9 +1908,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="SEA_DatabaseModelStoreContainer" CdmEntityContainer="SEA_DatabaseEntities">
+        <EntityContainerMapping StorageEntityContainer="SEA_DatabaseStoreContainer" CdmEntityContainer="SEA_DatabaseEntities">
           <EntitySetMapping Name="AspNetAnnouncements">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetAnnouncement">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetAnnouncement">
               <MappingFragment StoreEntitySet="AspNetAnnouncement">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
@@ -2303,7 +1919,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetAnnouncement_Subject">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetAnnouncement_Subject">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetAnnouncement_Subject">
               <MappingFragment StoreEntitySet="AspNetAnnouncement_Subject">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SubjectID" ColumnName="SubjectID" />
@@ -2312,7 +1928,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetAssignments">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetAssignment">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetAssignment">
               <MappingFragment StoreEntitySet="AspNetAssignment">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SubjectID" ColumnName="SubjectID" />
@@ -2329,7 +1945,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetAssignment_Topic">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetAssignment_Topic">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetAssignment_Topic">
               <MappingFragment StoreEntitySet="AspNetAssignment_Topic">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="AssignmentID" ColumnName="AssignmentID" />
@@ -2338,7 +1954,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetAttendances">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetAttendance">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetAttendance">
               <MappingFragment StoreEntitySet="AspNetAttendance">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -2350,7 +1966,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetClasses">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetClass">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetClass">
               <MappingFragment StoreEntitySet="AspNetClass">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="ClassName" ColumnName="ClassName" />
@@ -2358,34 +1974,16 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetClass_FeeType">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetClass_FeeType">
-              <MappingFragment StoreEntitySet="AspNetClass_FeeType">
+          <EntitySetMapping Name="AspNetCurriculums">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetCurriculum">
+              <MappingFragment StoreEntitySet="AspNetCurriculum">
                 <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="ClassID" ColumnName="ClassID" />
-                <ScalarProperty Name="FeeTypeID" ColumnName="FeeTypeID" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AspNetDiscountTypes">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetDiscountType">
-              <MappingFragment StoreEntitySet="AspNetDiscountType">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="TypeName" ColumnName="TypeName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AspNetDurationTypes">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetDurationType">
-              <MappingFragment StoreEntitySet="AspNetDurationType">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="TypeName" ColumnName="TypeName" />
+                <ScalarProperty Name="CurriculumName" ColumnName="CurriculumName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetExams">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetExam">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetExam">
               <MappingFragment StoreEntitySet="AspNetExams">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SubjectID" ColumnName="SubjectID" />
@@ -2399,48 +1997,16 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetFeeChallans">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetFeeChallan">
-              <MappingFragment StoreEntitySet="AspNetFeeChallan">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="ClassID" ColumnName="ClassID" />
-                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
-                <ScalarProperty Name="DurationTypeID" ColumnName="DurationTypeID" />
-                <ScalarProperty Name="TotalAmount" ColumnName="TotalAmount" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AspNetFeeTypes">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetFeeType">
-              <MappingFragment StoreEntitySet="AspNetFeeType">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="TypeName" ColumnName="TypeName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetRoles">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetRole">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetRole">
               <MappingFragment StoreEntitySet="AspNetRoles">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetSessions">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetSession">
-              <MappingFragment StoreEntitySet="AspNetSession">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="SessionName" ColumnName="SessionName" />
-                <ScalarProperty Name="SessionStartDate" ColumnName="SessionStartDate" />
-                <ScalarProperty Name="SessionEndDate" ColumnName="SessionEndDate" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetStudents">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetStudent">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetStudent">
               <MappingFragment StoreEntitySet="AspNetStudent">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -2449,7 +2015,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetStudent_Announcement">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetStudent_Announcement">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetStudent_Announcement">
               <MappingFragment StoreEntitySet="AspNetStudent_Announcement">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -2458,18 +2024,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetStudent_Discount">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetStudent_Discount">
-              <MappingFragment StoreEntitySet="AspNetStudent_Discount">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="StudentID" ColumnName="StudentID" />
-                <ScalarProperty Name="DiscountID" ColumnName="DiscountID" />
-                <ScalarProperty Name="Percentage" ColumnName="Percentage" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetStudent_Exam">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetStudent_Exam">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetStudent_Exam">
               <MappingFragment StoreEntitySet="AspNetStudent_Exam">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -2478,19 +2034,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetStudent_Payment">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetStudent_Payment">
-              <MappingFragment StoreEntitySet="AspNetStudent_Payment">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="StudentID" ColumnName="StudentID" />
-                <ScalarProperty Name="FeeChallanID" ColumnName="FeeChallanID" />
-                <ScalarProperty Name="PaymentAmount" ColumnName="PaymentAmount" />
-                <ScalarProperty Name="PaymentDate" ColumnName="PaymentDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetStudent_Subject">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetStudent_Subject">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetStudent_Subject">
               <MappingFragment StoreEntitySet="AspNetStudent_Subject">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -2499,7 +2044,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetStudent_Test">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetStudent_Test">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetStudent_Test">
               <MappingFragment StoreEntitySet="AspNetStudent_Test">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -2508,8 +2053,18 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="AspNetSubject_Curriculum">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetSubject_Curriculum">
+              <MappingFragment StoreEntitySet="AspNetSubject_Curriculum">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="WeightageValue" ColumnName="WeightageValue" />
+                <ScalarProperty Name="CurriculumID" ColumnName="CurriculumID" />
+                <ScalarProperty Name="SubjectID" ColumnName="SubjectID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="AspNetSubjects">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetSubject">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetSubject">
               <MappingFragment StoreEntitySet="AspNetSubjects">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SubjectName" ColumnName="SubjectName" />
@@ -2519,7 +2074,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetTeachers">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetTeacher">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetTeacher">
               <MappingFragment StoreEntitySet="AspNetTeacher">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="TeacherID" ColumnName="TeacherID" />
@@ -2527,20 +2082,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetTerms">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetTerm">
-              <MappingFragment StoreEntitySet="AspNetTerm">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="TermName" ColumnName="TermName" />
-                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
-                <ScalarProperty Name="TermStartDate" ColumnName="TermStartDate" />
-                <ScalarProperty Name="TermEndDate" ColumnName="TermEndDate" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetTests">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetTest">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetTest">
               <MappingFragment StoreEntitySet="AspNetTest">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SubjectID" ColumnName="SubjectID" />
@@ -2555,7 +2098,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetTest_Topic">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetTest_Topic">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetTest_Topic">
               <MappingFragment StoreEntitySet="AspNetTest_Topic">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="TestID" ColumnName="TestID" />
@@ -2564,7 +2107,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetTopics">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetTopic">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetTopic">
               <MappingFragment StoreEntitySet="AspNetTopic">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="TopicName" ColumnName="TopicName" />
@@ -2573,7 +2116,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserClaims">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetUserClaim">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetUserClaim">
               <MappingFragment StoreEntitySet="AspNetUserClaims">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
@@ -2583,7 +2126,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserLogins">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetUserLogin">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetUserLogin">
               <MappingFragment StoreEntitySet="AspNetUserLogins">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
@@ -2593,7 +2136,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUsers">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.AspNetUser">
+            <EntityTypeMapping TypeName="SEA_Database.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -2612,7 +2155,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Student_Assignment">
-            <EntityTypeMapping TypeName="SEA_DatabaseModel.Student_Assignment">
+            <EntityTypeMapping TypeName="SEA_Database.Student_Assignment">
               <MappingFragment StoreEntitySet="Student_Assignment">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -2625,7 +2168,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="AspNetUserRoles" TypeName="SEA_DatabaseModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
+          <AssociationSetMapping Name="AspNetUserRoles" TypeName="SEA_Database.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
             <EndProperty Name="AspNetRoles">
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>

@@ -1,8 +1,64 @@
 ﻿<script src="~/Scripts/jquery-1.10.2.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        var subjectcookieval = null;
+        var classcookieval = null;
+        var allcookies = document.cookie;
+
+        // Get all the cookies pairs in an array
+        cookiearray = allcookies.split(';');
+
+        // Now take key value pair out of this array
+        for (var i = 0; i < cookiearray.length; i++) {
+            name = cookiearray[i].split('=')[0];
+            value = cookiearray[i].split('=')[1];
+
+            console.log(cookiearray[i]);
+
+            if (cookiearray[i].split('=')[0] == " ClassCookie" || cookiearray[i].split('=')[0] == "ClassCookie") {
+                classcookieval = cookiearray[i].split('=')[1];
+
+            }
+
+            if (cookiearray[i].split('=')[0] == " SubjectsCookie" || cookiearray[i].split('=')[0] == "SubjectsCookie") {
+                subjectcookieval = cookiearray[i].split('=')[1];
+
+            }
+        }
+        console.log("classval", classcookieval);
+
+        console.log("subval", subjectcookieval);
+        if (classcookieval != null && subjectcookieval != null) {
+
+            var selectClass = document.getElementById('ClassID');
+            selectClass.value = classcookieval;
+
+
+            $.get('@Url.Action("SubjectsByClass")',
+                    { id: classcookieval }, function (data) {
+                        //alert(JSON.stringify(data));
+                        $('#SubjectID').html('');
+                        $('#SubjectID').prop('disabled', false);
+                        $.each(data, function (i, item) {
+                            $('#SubjectID').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                        });
+                        $.get('@Url.Action("TopicsBySubject", "AspNetAssignment")',
+                        { id: subjectcookieval }, function (data) {
+                            $('#topics_table').html(' ');
+                            console.log(JSON.stringify(data));
+
+                            $.each(data, function (i, item) {
+                                $('#topics_table').append('<tr><td>' + item.TopicName + '</td><td><a href="/AspNetTopic/Edit?id=' + item.Id + '">Edit</a>|<a href="/AspNetTopic/Details?id=' + item.Id + '">Detail</a>|<a href="/AspNetTopic/Delete?id=' + item.Id + '">Delete</a></td></tr>');
+                            });
+
+                        });
+                    });
+        }
+
         $("#ClassID").click(function () {
             var selectedClass = $("#ClassID").val();
+            document.cookie = "ClassCookie=" + selectedClass + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+
             $.get('@Url.Action("SubjectsByClass")',
                 { id: selectedClass }, function (data) {
 
@@ -17,6 +73,8 @@
         });
         $("#SubjectID").click(function () {
             var selectedSubject = $("#SubjectID").val();
+            document.cookie = "SubjectsCookie=" + selectedSubject + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+
             $.get('@Url.Action("TopicsBySubject", "AspNetAssignment")',
                 { id: selectedSubject }, function (data) {
                     $('#topics_table').html(' ');

@@ -1,0 +1,160 @@
+﻿@model SEA_Application.Models.AspNetUser
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+
+
+
+<h2>StudentsIndex</h2>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+    var selectedClass;
+    $(document).ready(function () {
+        var selectedStudent = '@Model.Id';
+        $.get('@Url.Action("StudentClass")',
+            { id: selectedStudent }, function (data) {
+                //console.log(JSON.stringify(data));
+                //StudentsClass = JSON.stringify(data);
+                selectedClass = data;
+                $('#ClassID').val(data);
+                console.log($('#ClassID').val());
+                $.get('@Url.Action("SubjectsByClass")',
+           { id: $('#ClassID').val() }, function (data) {
+               //alert(JSON.stringify(data));
+               console.log($('#ClassID').val());
+               $('#subjects').html('');
+               $('#subjects').prop('disabled', false);
+               $.each(data, function (i, item) {
+                   console.log(item.Id);
+                   $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+               });
+               $.get('@Url.Action("SubjectsByStudent")',
+                  { id: selectedStudent }, function (data) {
+                      $('#subjects').prop('disabled', false);
+                      $.each(data, function (i, item) {
+                          //var Name = item.Id;
+                          //$("#subjects option").prop("selected", true);
+                          //console.log(item.Id);
+                          //$("#subjects").val(item.Id);
+                          //$('#subjects').multiSelect('select_all');
+                          $("#subjects option[value='" + item.Id + "']").prop("selected", true);
+
+                       });
+                  });
+               });
+            });
+       
+
+        $("#ClassID").click(function () {
+            var selectedClasss = $("#ClassID").val();
+            $.get('@Url.Action("SubjectsByClass")',
+                { id: selectedClasss }, function (data) {
+
+                    console.log($('#ClassID').val());
+                    //alert(JSON.stringify(data));
+                    $('#subjects').html('');
+                    $('#subjects').prop('disabled', false);
+                    $.each(data, function (i, item) {
+
+                        $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+
+    });
+
+</script>
+
+
+
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>AspNetUser</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PasswordHash, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PasswordHash, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PasswordHash, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SecurityStamp, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SecurityStamp, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SecurityStamp, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <form>
+            <div class="form-group">
+                <lable class="col-md-2 control-label"><b>Select Class</b></lable>
+                <div class="col-md-10">
+                    @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+                </div>
+                <br />
+                <label class="control-label col-md-2">Subjects</label>
+                <div class="col-md-10">
+                    <select multiple class="form-control" id="subjects" name="subjects"></select>
+                </div>
+            </div>
+        </form>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

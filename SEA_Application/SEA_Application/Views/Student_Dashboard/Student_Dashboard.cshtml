@@ -34,7 +34,7 @@
                     });
 
                  });
-           
+
         });
         $('#student_assignment').click(function () {
             $.ajax({
@@ -99,11 +99,50 @@
         });
 
 
-       // randomValue();
-        
+        // randomValue();
+
+
+
+
+
+
+        $('#student_test').click(function () {
+            $.ajax({
+                url: "@(Url.Action("Student_Tests", "Student_Dashboard"))",
+                type: "GET",
+
+            cache: false,
+            success: function (data) {
+                //Fill div with results
+                $("#partial").html(data);
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+        });
     });
 
-    
+
+
+        $('#student_exam').click(function () {
+            $.ajax({
+                url: "@(Url.Action("Student_Exams", "Student_Dashboard"))",
+                type: "GET",
+
+                cache: false,
+                success: function (data) {
+                    //Fill div with results
+                    $("#partial").html(data);
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        });
+
+    });
+
+
     var gaugeChart = AmCharts.makeChart("partial", {
         "type": "gauge",
         "theme": "light",
@@ -113,7 +152,7 @@
             "tickAlpha": 0.2,
             "valueInterval": 20,
             "bands": [{
-               
+
                 "color": "#cc4748",
                 "endValue": 90,
                 "startValue": 0
@@ -139,9 +178,9 @@
     setTimeout(function () { randomValue(); }, 2000);
      //setInterval(randomValue, 2000);
     //
-    // set random value 
+    // set random value
     function randomValue() {
-        
+
         var value = Math.round(20);
         if (gaugeChart) {
             if (gaugeChart.arrows) {
@@ -190,11 +229,13 @@
                         <li><a href="@Url.Action("Index", "Student")"><i class="glyphicon glyphicon-user"></i> Classes</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-user"></i> Subjects</a></li>
                         <li><a id="student_assignment" href="#"><i class="glyphicon glyphicon-user"></i> Assignment</a></li>
-                        <li><a href="@Url.Action("Index", "Subject")"><i class="glyphicon glyphicon-user"></i> Test</a></li>
+                        @*<li><a href="@Url.Action("Index", "Subject")"><i class="glyphicon glyphicon-user"></i> Test</a></li>*@
+                        <li><a id="student_test" href="#"><i class="glyphicon glyphicon-user"></i> Tests</a></li>
                         <li><a id="student_announcement" href="#"><i class="glyphicon glyphicon-user"></i> Announcement</a></li>
                         <li><a id="student_marks" href="#"><i class="glyphicon glyphicon-user"></i> Marks</a></li>
                         <li><a id="student_attendance" href="#"><i class="glyphicon glyphicon-user"></i> Attendance</a></li>
-                        <li><a href="@Url.Action("GenerateInvoicePDF", "Student_Dashboard")" ><i class="glyphicon glyphicon-user"></i> Challan Form</a></li>
+                        <li><a id="student_exam" href="#"><i class="glyphicon glyphicon-user"></i> Exams</a></li>
+                        @*<li><a href="@Url.Action("Index", "AspNetExam")"><i class="glyphicon glyphicon-list"></i>Exams</a></li>*@
 
                     </ul>
                 </li>

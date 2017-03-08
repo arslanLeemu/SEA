@@ -48,14 +48,6 @@
       <HintPath>..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="itextsharp, Version=5.5.10.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itextsharp.xmlworker, Version=5.5.10.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\itextsharp.xmlworker.5.5.10\lib\itextsharp.xmlworker.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -89,19 +81,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NReco.PdfGenerator, Version=1.1.14.0, Culture=neutral, PublicKeyToken=231663d50a41b451, processorArchitecture=MSIL">
-      <HintPath>..\packages\NReco.PdfGenerator.1.1.14\lib\net20\NReco.PdfGenerator.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="RazorPDF, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RazorPDF.1.0.0\lib\net45\RazorPDF.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -222,23 +207,15 @@
     <Compile Include="Controllers\AspNetAnnouncementController.cs" />
     <Compile Include="Controllers\AspNetAssignmentController.cs" />
     <Compile Include="Controllers\AspNetClassController.cs" />
-    <Compile Include="Controllers\AspNetSessionController.cs" />
-    <Compile Include="Controllers\AspNetTermController.cs" />
-    <Compile Include="Controllers\FeeControllers\AspNetClass_FeeTypeController.cs" />
+    <Compile Include="Controllers\AspNetCurriculumsController.cs" />
     <Compile Include="Controllers\AspNetExamController.cs" />
     <Compile Include="Controllers\AspNetRoleController.cs" />
     <Compile Include="Controllers\AspNetSubjectController.cs" />
+    <Compile Include="Controllers\AspNetSubject_CurriculumController.cs" />
     <Compile Include="Controllers\AspNetTeacherController.cs" />
     <Compile Include="Controllers\AspNetTestController.cs" />
     <Compile Include="Controllers\AspNetTopicController.cs" />
     <Compile Include="Controllers\AspNetUserController.cs" />
-    <Compile Include="Controllers\FeeControllers\AspNetDiscountTypeController.cs" />
-    <Compile Include="Controllers\FeeControllers\AspNetDurationTypeController.cs" />
-    <Compile Include="Controllers\FeeControllers\AspNetFeeChallanController.cs" />
-    <Compile Include="Controllers\FeeControllers\AspNetFeeTypeController.cs" />
-    <Compile Include="Controllers\FeeControllers\AspNetStudent_DiscountController.cs" />
-    <Compile Include="Controllers\FeeControllers\AspNetStudent_PaymentController.cs" />
-    <Compile Include="Controllers\FeeControllers\FeeManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -266,28 +243,13 @@
     <Compile Include="Models\AspNetClass.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AspNetClass_FeeType.cs">
-      <DependentUpon>SEA_Database.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AspNetDiscountType.cs">
-      <DependentUpon>SEA_Database.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AspNetDurationType.cs">
+    <Compile Include="Models\AspNetCurriculum.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AspNetExam.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AspNetFeeChallan.cs">
-      <DependentUpon>SEA_Database.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AspNetFeeType.cs">
-      <DependentUpon>SEA_Database.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\AspNetRole.cs">
-      <DependentUpon>SEA_Database.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AspNetSession.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AspNetStudent.cs">
@@ -296,13 +258,7 @@
     <Compile Include="Models\AspNetStudent_Announcement.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AspNetStudent_Discount.cs">
-      <DependentUpon>SEA_Database.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\AspNetStudent_Exam.cs">
-      <DependentUpon>SEA_Database.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AspNetStudent_Payment.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AspNetStudent_Subject.cs">
@@ -314,10 +270,10 @@
     <Compile Include="Models\AspNetSubject.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AspNetTeacher.cs">
+    <Compile Include="Models\AspNetSubject_Curriculum.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\AspNetTerm.cs">
+    <Compile Include="Models\AspNetTeacher.cs">
       <DependentUpon>SEA_Database.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AspNetTest.cs">
@@ -362,10 +318,6 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\aspnet-SEA_Application-20170202034412.mdf" />
-    <Content Include="App_Data\aspnet-SEA_Application-20170202034412_log.ldf">
-      <DependentUpon>aspnet-SEA_Application-20170202034412.mdf</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Custom-Icon-Design-Pretty-Office-10-Teacher-male.ico" />
@@ -517,70 +469,30 @@
     <Content Include="Views\AspNetTopic\Edit.cshtml" />
     <Content Include="Views\AspNetTopic\Index.cshtml" />
     <Content Include="Views\Reports\_Assignment_Report.cshtml" />
-    <Content Include="Views\Reports\_MultipleAssignment_Report.cshtml" />
-    <Content Include="Views\Reports\_Test_Report.cshtml" />
-    <Content Include="Views\Reports\_MultipleTest_Report.cshtml" />
-    <Content Include="Views\Reports\_Exam_Report.cshtml" />
-    <Content Include="Views\Reports\_MultipleExam_Report.cshtml" />
-    <Content Include="Views\Reports\_Student_Report.cshtml" />
-    <Content Include="Views\AspNetFeeType\Create.cshtml" />
-    <Content Include="Views\AspNetFeeType\Delete.cshtml" />
-    <Content Include="Views\AspNetFeeType\Details.cshtml" />
-    <Content Include="Views\AspNetFeeType\Edit.cshtml" />
-    <Content Include="Views\AspNetFeeType\Index.cshtml" />
-    <Content Include="Views\AspNetClass_FeeType\Create.cshtml" />
-    <Content Include="Views\AspNetClass_FeeType\Delete.cshtml" />
-    <Content Include="Views\AspNetClass_FeeType\Details.cshtml" />
-    <Content Include="Views\AspNetClass_FeeType\Edit.cshtml" />
-    <Content Include="Views\AspNetClass_FeeType\Index.cshtml" />
-    <Content Include="Views\AspNetDurationType\Create.cshtml" />
-    <Content Include="Views\AspNetDurationType\Delete.cshtml" />
-    <Content Include="Views\AspNetDurationType\Details.cshtml" />
-    <Content Include="Views\AspNetDurationType\Edit.cshtml" />
-    <Content Include="Views\AspNetDurationType\Index.cshtml" />
-    <Content Include="Views\AspNetFeeChallan\Create.cshtml" />
-    <Content Include="Views\AspNetFeeChallan\Delete.cshtml" />
-    <Content Include="Views\AspNetFeeChallan\Details.cshtml" />
-    <Content Include="Views\AspNetFeeChallan\Edit.cshtml" />
-    <Content Include="Views\AspNetFeeChallan\Index.cshtml" />
-    <Content Include="Views\AspNetStudent_Payment\Create.cshtml" />
-    <Content Include="Views\AspNetStudent_Payment\Delete.cshtml" />
-    <Content Include="Views\AspNetStudent_Payment\Details.cshtml" />
-    <Content Include="Views\AspNetStudent_Payment\Edit.cshtml" />
-    <Content Include="Views\AspNetStudent_Payment\Index.cshtml" />
-    <Content Include="Views\AspNetDiscountType\Create.cshtml" />
-    <Content Include="Views\AspNetDiscountType\Delete.cshtml" />
-    <Content Include="Views\AspNetDiscountType\Details.cshtml" />
-    <Content Include="Views\AspNetDiscountType\Edit.cshtml" />
-    <Content Include="Views\AspNetDiscountType\Index.cshtml" />
-    <Content Include="Views\AspNetStudent_Discount\Create.cshtml" />
-    <Content Include="Views\AspNetStudent_Discount\Delete.cshtml" />
-    <Content Include="Views\AspNetStudent_Discount\Details.cshtml" />
-    <Content Include="Views\AspNetStudent_Discount\Edit.cshtml" />
-    <Content Include="Views\AspNetStudent_Discount\Index.cshtml" />
-    <Content Include="Views\AspNetSession\Create.cshtml" />
-    <Content Include="Views\AspNetSession\Delete.cshtml" />
-    <Content Include="Views\AspNetSession\Details.cshtml" />
-    <Content Include="Views\AspNetSession\Edit.cshtml" />
-    <Content Include="Views\AspNetSession\Index.cshtml" />
-    <Content Include="Views\AspNetTerm\Create.cshtml" />
-    <Content Include="Views\AspNetTerm\Delete.cshtml" />
-    <Content Include="Views\AspNetTerm\Details.cshtml" />
-    <Content Include="Views\AspNetTerm\Edit.cshtml" />
-    <Content Include="Views\AspNetTerm\Index.cshtml" />
-    <Content Include="Views\FeeManagement\FeeManagement_Dashboard.cshtml" />
-    <Content Include="Views\FeeManagement\_Fee_Type.cshtml" />
-    <Content Include="Views\FeeManagement\_Fee_Duration.cshtml" />
-    <Content Include="Views\FeeManagement\_Discount_Type.cshtml" />
-    <Content Include="Views\FeeManagement\_Challan_Form.cshtml" />
-    <Content Include="Views\FeeManagement\_Class_Fee.cshtml" />
-    <Content Include="Views\FeeManagement\_Student_Discount.cshtml" />
-    <Content Include="Views\FeeManagement\_Defaulters.cshtml" />
-    <Content Include="Views\FeeManagement\_Student_History.cshtml" />
+    <Content Include="Views\AspNetCurriculums\Create.cshtml" />
+    <Content Include="Views\AspNetCurriculums\Delete.cshtml" />
+    <Content Include="Views\AspNetCurriculums\Details.cshtml" />
+    <Content Include="Views\AspNetCurriculums\Edit.cshtml" />
+    <Content Include="Views\AspNetCurriculums\Index.cshtml" />
+    <Content Include="Views\Teacher_Dashboard\_Class_Curriculum.cshtml" />
+    <Content Include="Views\AspNetSubject_Curriculum\Create.cshtml" />
+    <Content Include="Views\AspNetSubject_Curriculum\Delete.cshtml" />
+    <Content Include="Views\AspNetSubject_Curriculum\Details.cshtml" />
+    <Content Include="Views\AspNetSubject_Curriculum\Edit.cshtml" />
+    <Content Include="Views\AspNetSubject_Curriculum\Index.cshtml" />
+    <Content Include="Views\AspNetAssignment\_View_Assignments.cshtml" />
+    <Content Include="Views\AspNetTest\_View_Tests.cshtml" />
+    <Content Include="Views\Student_Dashboard\_Student_Exams.cshtml" />
+    <Content Include="Views\Student_Dashboard\_Student_Tests.cshtml" />
+    <Content Include="Views\AspNetUser\StudentsIndex.cshtml" />
+    <Content Include="Views\AspNetSubject_Curriculum\_View_Curriculum.cshtml" />
+    <Content Include="Views\AspNetUser\EditStudent.cshtml" />
+    <Content Include="Views\AspNetExam\_View_Exam.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Assignments\" />
     <Folder Include="App_Data\SubmittedAssignments\" />
+    <Folder Include="Views\CurriculumGraph\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -1,10 +1,52 @@
 ﻿@model IEnumerable<SEA_Application.Models.AspNetAnnouncement_Subject>
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#ClassID").click(function () {
-            var selectedClass = $("#ClassID").val();
+        var subjectcookieval;
+        var ClassCookie_Announcementval
+        var allcookies = document.cookie;
+
+        // Get all the cookies pairs in an array
+        cookiearray = allcookies.split(';');
+
+        // Now take key value pair out of this array
+        for (var i = 0; i < cookiearray.length; i++)
+        {
+                name = cookiearray[i].split('=')[0];
+                value = cookiearray[i].split('=')[1];
+
+                console.log(cookiearray[i]);
+
+                if (cookiearray[i].split('=')[0] == " ClassCookie_Announcement" || cookiearray[i].split('=')[0] == "ClassCookie_Announcement")
+                {
+                    ClassCookie_Announcementval = cookiearray[i].split('=')[1];
+
+                }
+
+                if (cookiearray[i].split('=')[0] == " SubjectsCookie_Announcement" || cookiearray[i].split('=')[0] == "SubjectsCookie_Announcement")
+                {
+                    subjectcookieval = cookiearray[i].split('=')[1];
+
+                }
+        }
+        console.log("classval", ClassCookie_Announcementval);
+
+        console.log("subval", subjectcookieval);
+        if(ClassCookie_Announcementval!=null && subjectcookieval!=null)
+        {
+            var selectClass = document.getElementById('ClassID');
+            selectClass.value = ClassCookie_Announcementval;
+
+        
+            SubjectsByClassID(ClassCookie_Announcementval);
+            AnnouncementBySubID(subjectcookieval);
+
+
+
+        }
+        function SubjectsByClassID(ClassIDVal)
+        {
             $.get('@Url.Action("SubjectsByClass")',
-                { id: selectedClass }, function (data) {
+                { id: ClassIDVal }, function (data) {
 
                     //alert(JSON.stringify(data));
                     $('#subjects').html('');
@@ -14,20 +56,35 @@
                     });
 
                 });
+        }
+
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            document.cookie = "ClassCookie_Announcement="+selectedClass+";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+            SubjectsByClassID(selectedClass);
+            //document.cookie = 'ClassCookie_Announcement=Teacher_Subject; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
+
         });
-        $("#subjects").click(function () {
-            var selectedSubject = $("#subjects").val();
+
+        function AnnouncementBySubID(selectedSubject)
+        {
             $.get('@Url.Action("AnnouncementBySubject", "Teacher_Dashboard")',
                 { id: selectedSubject }, function (data) {
                     $('#announcement_table').html(' ');
-                    console.log(JSON.stringify(data));
-                    
+                    //console.log(JSON.stringify(data));
+
                     $.each(data, function (i, item) {
-                        $('#announcement_table').append('<tr><td>' + item.Title + '</td><td>' + item.SubjectName + '</td><td>' + item.Title + '</td><td><a href="/AspNetAnnouncement/Edit?id='+item.Id+'">Edit</a>|<a href="/AspNetAnnouncement/Detail?id='+item.Id+'">Detail</a>|<a href="/AspNetAnnouncement/Delete?id='+item.Id+'">Delete</a></td></tr>');
+                        $('#announcement_table').append('<tr><td>' + item.Title + '</td><td>' + item.SubjectName + '</td><td>' + item.Title + '</td><td><a href="/AspNetAnnouncement/Edit?id=' + item.Id + '">Edit</a>|<a href="/AspNetAnnouncement/Details?id=' + item.Id + '">Detail</a>|<a href="/AspNetAnnouncement/Delete?id=' + item.Id + '">Delete</a></td></tr>');
                     });
 
                 });
-          
+        }
+        $("#subjects").click(function () {
+            var selectedSubject = $("#subjects").val();
+            document.cookie = "SubjectsCookie_Announcement="+selectedSubject+";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+            AnnouncementBySubID(selectedSubject);
+
+
         });
     });
 </script>
@@ -66,7 +123,7 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody id="challan_table">
+        <tbody id="announcement_table">
 
         </tbody>
     </table>

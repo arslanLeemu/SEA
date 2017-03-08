@@ -1,0 +1,236 @@
+﻿@model SEA_Application.Models.AspNetSubject_Curriculum
+
+<h2>Create</h2>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script>
+    $(document).ready(function () {
+
+       
+
+        var subjectcookieval = null;
+        var ClassCookie_ClassCurrval = null;
+        var allcookies = document.cookie;
+
+        // Get all the cookies pairs in an array
+        cookiearray = allcookies.split(';');
+
+        // Now take key value pair out of this array
+        for (var i = 0; i < cookiearray.length; i++) {
+            name = cookiearray[i].split('=')[0];
+            value = cookiearray[i].split('=')[1];
+
+            console.log(cookiearray[i]);
+
+            if (cookiearray[i].split('=')[0] == " ClassCookie_ClassCurr" || cookiearray[i].split('=')[0] == "ClassCookie_ClassCurr") {
+                ClassCookie_ClassCurrval = cookiearray[i].split('=')[1];
+
+            }
+
+            if (cookiearray[i].split('=')[0] == " SubjectsCookie_ClassCurr" || cookiearray[i].split('=')[0] == "SubjectsCookie_ClassCurr") {
+                subjectcookieval = cookiearray[i].split('=')[1];
+
+            }
+        }
+        console.log("classval", ClassCookie_ClassCurrval);
+
+        console.log("subval", subjectcookieval);
+        if (ClassCookie_ClassCurrval != null && subjectcookieval != null) {
+
+            var selectClass = document.getElementById('ClassID');
+            selectClass.value = ClassCookie_ClassCurrval;
+
+            SubjectsListByClass(ClassCookie_ClassCurrval);
+            CurricBySubs(subjectcookieval);
+    }
+
+        $('#SubjectID').prop('disabled', true);
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            document.cookie = "ClassCookie_ClassCurr=" + selectedClass + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+            SubjectsListByClass(selectedClass);
+        });
+        $("#SubjectID").click(function () {
+            var selectedSubject = $("#SubjectID").val();
+            document.cookie = "SubjectsCookie_ClassCurr=" + selectedSubject + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+            CurricBySubs(selectedSubject);
+
+        });
+
+
+
+        function SubjectsListByClass(classid) {
+            $.get('@Url.Action("SubjectsByClass","Teacher_Dashboard")',
+                { id: classid }, function (data) {
+                    $('#SubjectID').html('');
+                    $('#SubjectID').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        console.log(item);
+                        $('#SubjectID').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        }
+
+
+        function CurricBySubs(subID) {
+            $.get('@Url.Action("CurriculumBySubject", "AspNetSubject_Curriculum")',
+                { subjectID: subID }, function (data) {
+                    $('#announcement_table').html(' ');
+                    console.log(JSON.stringify(data));
+
+                    $.each(data, function (i, item) {
+                        $('#announcement_table').append('<tr><td>' + item.CurriculumName + '</td><td>' + item.SubjectName + '</td><td>' + item.WeightageValue + '</td><td><a href="/AspNetSubject_Curriculum/Edit?id=' + item.Id + '">Edit</a>|<a href="/AspNetSubject_Curriculum/Details?id=' + item.Id + '">Detail</a>|<a href="/AspNetSubject_Curriculum/Delete?id=' + item.Id + '">Delete</a></td></tr>');
+                    });
+
+                });
+        }
+
+
+        $("#btnAdd").bind("click", function () {
+
+            $("#class_fee_body").append(GetDynamicTextBox(""));
+            $('#TextBoxContainerTable tr:last td:first').append($("#CurriculumID").clone());
+            $('#btnRemove').click(function () {
+                $(this).closest('tr').remove();
+            })
+        });
+
+
+
+        $("#btnGet").bind("click", function () {
+            var values = "";
+            $("input[name=DynamicDropDown]").each(function () {
+                values += $(this).val() + "\n";
+            });
+            alert(values);
+        });
+        $("body").on("click", ".remove", function () {
+            $(this).closest("div").remove();
+        });
+
+
+        function SomeDeleteRowFunction(btndel) {
+            if (typeof (btndel) == "object") {
+                $(btndel).closest("tr").remove();
+            } else {
+                return false;
+            }
+        }
+        function GetDynamicTextBox(value) {
+            var html = '<tr><td id="DynamicDropDown"></td><td><input type="text" id="DynamicWeightageValue" class="form-control"></td><td><input type="button" class="btn btn-danger remove" value="Delete Row" onclick="SomeDeleteRowFunction(this);"></td></tr>';
+            return html;
+        }
+
+
+
+        var curriculum =
+                {
+                    SubjectID: '',
+                    CurriculumID: '',
+                    WeightageValue: '',
+
+                };
+        curriculums = [];
+        $(document).ready(function () {
+            $('#btnSave').click(function () {
+                curriculums = [];
+                $('table tbody tr').each(function () {
+                    curriculum = Object.create(curriculum);
+                    curriculum.SubjectID = $('#SubjectID').val();
+                    curriculum.CurriculumID = $('#CurriculumID', this).val();
+                    curriculum.WeightageValue = $('#DynamicWeightageValue', this).val();
+                    curriculums.push(curriculum);
+
+                });
+                cur = JSON.stringify({ 'cur': curriculums });
+                console.log(cur);
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '/Teacher_Dashboard/Class_Curriculum',
+                    data: cur,
+                    success: function () {
+                        $('#partial').html('curriculum Successfully Save');
+                    },
+                    failure: function (response) {
+                        $('#partial').html('Something went wrong');
+                    }
+                });
+            });
+
+
+
+        });
+
+    });
+</script>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>AspNetCurriculum</h4>
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <lable class="control-label col-md-2"><b>Class</b></lable>
+            <div class="col-md-10">
+                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.SubjectID, "SubjectID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("SubjectID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SubjectID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <br />
+        <hr />
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                Curriculum Name
+            </th>
+            <th>
+                Subject
+            </th>
+            <th>
+                Weightage Value
+            </th>
+        </tr>
+    </thead>
+    <tbody id="announcement_table"></tbody>
+</table>
+        <div class="form-group">
+            <button id="btnAdd" type="button" class="btn btn-primary">Add</button>
+
+        </div>
+        <div id="TextBoxContainer">
+            <!--Textboxes will be added here -->
+        </div>
+
+        
+        <table id="TextBoxContainerTable" class="table table-striped ">
+            <tbody id="class_fee_body"></tbody>
+        </table>
+        <div class="form-group">
+
+            <div class="col-md-10" hidden>
+                @Html.DropDownList("CurriculumID", null, htmlAttributes: new { @class = "form-control", @hidden = true })
+
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <button id="btnSave" type="button" class="btn btn-primary">Save</button>
+            
+        </div>
+    </div>
+}
+

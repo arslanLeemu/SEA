@@ -2,43 +2,287 @@
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 <link href="~/Content/bootstrap.css" rel="stylesheet" />
 <style>
-    #pie {
-        width: 50%;
-        height: 500px;
-    }
-    #guage {
-        width: 50%;
-        height: 500px;
-    }
     #chartdiv {
-        width: 50%;
-        height: 500px;
-    }
-    #chartdiv1 {
         width: 100%;
         height: 500px;
     }
-    
 </style>
 
 <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
 <script src="https://www.amcharts.com/lib/3/serial.js"></script>
 <script src="https://www.amcharts.com/lib/3/pie.js"></script>
-<script src="https://www.amcharts.com/lib/3/gauge.js"></script>
 <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
 <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
 <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-<link rel="stylesheet" type="text/css" href="http://www.shieldui.com/shared/components/latest/css/light/all.min.css" />
-<script type="text/javascript" src="http://www.shieldui.com/shared/components/latest/js/shieldui-all.min.js"></script>
-<script type="text/javascript" src="http://www.shieldui.com/shared/components/latest/js/jszip.min.js"></script>
-<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-<script src="https://www.amcharts.com/lib/3/amstock.js"></script>
 <script>
     $(document).ready(function () {
         $(".nav-tabs a").click(function () {
             $(this).tab('show');
         });
+
+        var allcookies = document.cookie;
+
+        // Get all the cookies pairs in an array
+        cookiearray = allcookies.split(';');
+
+        // Now take key value pair out of this array
+        for (var i = 0; i < cookiearray.length; i++) {
+            name = cookiearray[i].split('=')[0];
+            value = cookiearray[i].split('=')[1];
+            //console.log(cookiearray[i].split('=')[1]);
+
+            if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Teacher_Subject") {
+                //console.log(cookiearray[i].split('=')[1]);
+                $.ajax({
+                    url: "@(Url.Action("Teacher_Subject", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Teacher_Announcement") {
+                $.ajax({
+                    url: "@(Url.Action("Teacher_Announcement", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Attendance") {
+                $.ajax({
+                    url: "@(Url.Action("Attendance", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Submission_Students_Assignments") {
+                $.ajax({
+                    url: "@(Url.Action("Submission_Students_Assignments", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "View_Assignments") {
+                $.ajax({
+                    url: "@(Url.Action("View_Assignments", "AspNetAssignment"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "View_Exam") {
+                $.ajax({
+                    url: "@(Url.Action("View_Exam", "AspNetExam"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "View_Test") {
+                $.ajax({
+                    url: "@(Url.Action("View_Test", "AspNetTest"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Assignment_Marks") {
+                $.ajax({
+                    url: "@(Url.Action("Assignment_Marks", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Exam_Marks") {
+                $.ajax({
+                    url: "@(Url.Action("Exam_Marks", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Test_Marks") {
+                $.ajax({
+                    url: "@(Url.Action("Test_Marks", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Test_Marks") {
+                $.ajax({
+                    url: "@(Url.Action("Test_Marks", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Topics") {
+                $.ajax({
+                    url: "@(Url.Action("Topics", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Assignment_Report") {
+                $.ajax({
+                    url: "@(Url.Action("Assignment_Report", "Reports"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+            else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "View_Curriculum") {
+                $.ajax({
+                    url: "@(Url.Action("View_Curriculum", "AspNetSubject_Curriculum"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            } else if ((cookiearray[i].split('=')[0] == "ppkcookie1" || cookiearray[i].split('=')[0] == " ppkcookie1") && cookiearray[i].split('=')[1] == "Class_Curriculum") {
+                $.ajax({
+                    url: "@(Url.Action("Class_Curriculum", "Teacher_Dashboard"))",
+                    type: "GET",
+
+                    cache: false,
+                    success: function (data) {
+                        //Fill div with results
+                        $("#partial").html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+        }
+
+
+
+
         $('#teacher_subject').click(function () {
+            document.cookie = 'ppkcookie1=Teacher_Subject; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Teacher_Subject","Teacher_Dashboard"))",
                 type: "GET",
@@ -55,6 +299,7 @@
         });
 
         $('#teacher_announcement').click(function () {
+            document.cookie = 'ppkcookie1=Teacher_Announcement; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Teacher_Announcement", "Teacher_Dashboard"))",
                 type: "GET",
@@ -70,6 +315,7 @@
             });
         });
         $('#teacher_attendance').click(function () {
+            document.cookie = 'ppkcookie1=Attendance; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Attendance", "Teacher_Dashboard"))",
                 type: "GET",
@@ -86,6 +332,7 @@
         });
 
         $('#StudentsAssignmentsSubmission').click(function () {
+            document.cookie = 'ppkcookie1=Submission_Students_Assignments; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Submission_Students_Assignments", "Teacher_Dashboard"))",
                 type: "GET",
@@ -101,7 +348,64 @@
             });
         });
 
+
+        $('#ViewAssignments').click(function () {
+            document.cookie = 'ppkcookie1=View_Assignments; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
+            $.ajax({
+                url: "@(Url.Action("View_Assignments", "AspNetAssignment"))",
+                type: "GET",
+
+            cache: false,
+            success: function (data) {
+                //Fill div with results
+                $("#partial").html(data);
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+            });
+    });
+
+        
+        $('#ViewExam').click(function () {
+            document.cookie = 'ppkcookie1=View_Exam; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
+            $.ajax({
+                url: "@(Url.Action("View_Exam", "AspNetExam"))",
+                type: "GET",
+
+            cache: false,
+            success: function (data) {
+                //Fill div with results
+                $("#partial").html(data);
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+            });
+    });
+
+
+        $('#ViewTest').click(function () {
+            document.cookie = 'ppkcookie1=View_Test; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
+            $.ajax({
+                url: "@(Url.Action("View_Test", "AspNetTest"))",
+                type: "GET",
+
+            cache: false,
+            success: function (data) {
+                //Fill div with results
+                $("#partial").html(data);
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+            });
+    });
+
+
+
         $('#StudentsAssignmentsMarks').click(function () {
+            document.cookie = 'ppkcookie1=Assignment_Marks; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Assignment_Marks", "Teacher_Dashboard"))",
                 type: "GET",
@@ -118,6 +422,7 @@
         });
 
         $('#StudentsExamMarks').click(function () {
+            document.cookie = 'ppkcookie1=Exam_Marks; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Exam_Marks", "Teacher_Dashboard"))",
                 type: "GET",
@@ -132,7 +437,10 @@
                 }
             });
         });
+
+
         $('#StudentsTestMarks').click(function () {
+            document.cookie = 'ppkcookie1=Test_Marks; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Test_Marks", "Teacher_Dashboard"))",
                 type: "GET",
@@ -147,7 +455,10 @@
                 }
             });
         });
+
+
         $('#manageSubjectTopics').click(function () {
+            document.cookie = 'ppkcookie1=Topics; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Topics", "Teacher_Dashboard"))",
                 type: "GET",
@@ -163,76 +474,15 @@
             });
 
         });
+
+
+
         $('#ReportByAssignmnet').click(function () {
+            document.cookie = 'ppkcookie1=Assignment_Report; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
             $.ajax({
                 url: "@(Url.Action("Assignment_Report", "Reports"))",
                 type: "GET",
 
-                cache: false,
-                success: function (data) {
-                    //Fill div with results
-                    $("#partial").html(data);
-                },
-                error: function (xhr, status, error) {
-                    alert(xhr.responseText);
-                }
-            });
-
-        });
-        $('#ReportByMultipleAssignmnet').click(function () {
-            $.ajax({
-                url: "@(Url.Action("MultipleAssignment_Report", "Reports"))",
-                type: "GET",
-
-                cache: false,
-                success: function (data) {
-                    //Fill div with results
-                    $("#partial").html(data);
-                },
-                error: function (xhr, status, error) {
-                    alert(xhr.responseText);
-                }
-            });
-
-        });
-
-        $('#ReportByTest').click(function () {
-            $.ajax({
-                url: "@(Url.Action("Test_Report", "Reports"))",
-                type: "GET",
-
-                cache: false,
-                success: function (data) {
-                    //Fill div with results
-                    $("#partial").html(data);
-                },
-                error: function (xhr, status, error) {
-                    alert(xhr.responseText);
-                }
-            });
-
-        });
-        $('#ReportByMultipleTest').click(function () {
-            $.ajax({
-                url: "@(Url.Action("MultipleTest_Report", "Reports"))",
-                type: "GET",
-
-                cache: false,
-                success: function (data) {
-                    //Fill div with results
-                    $("#partial").html(data);
-                },
-                error: function (xhr, status, error) {
-                    alert(xhr.responseText);
-                }
-            });
-
-        });
-        $('#ReportByMultipleExam').click(function () {
-            $.ajax({
-                url: "@(Url.Action("MultipleExam_Report", "Reports"))",
-                type: "GET",
-
             cache: false,
             success: function (data) {
                 //Fill div with results
@@ -241,43 +491,45 @@
             error: function (xhr, status, error) {
                 alert(xhr.responseText);
             }
-        });
-
-        });
-        $('#ReportByExam').click(function () {
-            $.ajax({
-                url: "@(Url.Action("Exam_Report", "Reports"))",
-                type: "GET",
-
-            cache: false,
-            success: function (data) {
-                //Fill div with results
-                $("#partial").html(data);
-            },
-            error: function (xhr, status, error) {
-                alert(xhr.responseText);
-            }
-        });
-
-        });
-
-        $('#ReportByStudent').click(function () {
-            $.ajax({
-                url: "@(Url.Action("Student_Report", "Reports"))",
-                type: "GET",
-
-            cache: false,
-            success: function (data) {
-                //Fill div with results
-                $("#partial").html(data);
-            },
-            error: function (xhr, status, error) {
-                alert(xhr.responseText);
-            }
-        });
+            });
 
     });
 
+
+        $('#Class_Curriculum').click(function () {
+            document.cookie = 'ppkcookie1=Class_Curriculum; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
+            $.ajax({
+                url: "@(Url.Action("Class_Curriculum", "Teacher_Dashboard"))",
+                type: "GET",
+
+                cache: false,
+                success: function (data) {
+                    //Fill div with results
+                    $("#partial").html(data);
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        });
+
+
+        $('#ViewCurriculum').click(function () {
+            document.cookie = 'ppkcookie1=View_Curriculum; expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/';
+            $.ajax({
+                url: "@(Url.Action("View_Curriculum", "AspNetSubject_Curriculum"))",
+                type: "GET",
+
+                cache: false,
+                success: function (data) {
+                    //Fill div with results
+                    $("#partial").html(data);
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        });
         
     });
 </script>
@@ -317,7 +569,8 @@
                 <li>
                     <a href="#" id="teacher_assignment" data-toggle="collapse" data-target="#assignments">Assignment</a>
                     <ul class="nav nav-stacked collapse" id="assignments">
-                        <li><a href="@Url.Action("Index", "AspNetAssignment")"><i class="glyphicon glyphicon-list"></i>View Assignment</a></li>
+                        @*<li><a href="@Url.Action("Index", "AspNetAssignment")"><i class="glyphicon glyphicon-list"></i>View Assignment</a></li>*@
+                        <li><a id="ViewAssignments" href="#"><i class="glyphicon glyphicon-list"></i> View Assignments</a></li>
                         <li><a id="StudentsAssignmentsSubmission" href="#"><i class="glyphicon glyphicon-list"></i> Assignment Submissions</a></li>
                         <li><a id="StudentsAssignmentsMarks" href="#"><i class="glyphicon glyphicon-list"></i> Assignment Marks</a></li>
                     </ul>
@@ -325,14 +578,15 @@
                 <li>
                     <a href="#" id="teacher_exams" data-toggle="collapse" data-target="#Exams">Exams</a>
                     <ul class="nav nav-stacked collapse" id="Exams">
-                        <li><a href="@Url.Action("Index", "AspNetExam")"><i class="glyphicon glyphicon-list"></i>View Exams</a></li>
+                        <li><a id="ViewExam" href="#"><i class="glyphicon glyphicon-list"></i>View Exams</a></li>
                         <li><a id="StudentsExamMarks" href="#"><i class="glyphicon glyphicon-list"></i>Exams Marks</a></li>
                     </ul>
                 </li>
                 <li>
                     <a href="#" id="teachers_test" data-toggle="collapse" data-target="#Test">Test</a>
                     <ul class="nav nav-stacked collapse" id="Test">
-                        <li><a href="@Url.Action("Index", "AspNetTest")"><i class="glyphicon glyphicon-list"></i>View Test</a></li>
+                        @*<li><a href="@Url.Action("Index", "AspNetTest")"><i class="glyphicon glyphicon-list"></i>View Test</a></li>*@
+                        <li><a id="ViewTest" href="#"><i class="glyphicon glyphicon-list"></i> View Test</a></li>
                         <li><a id="StudentsTestMarks" href="#"><i class="glyphicon glyphicon-list"></i> Test Marks</a></li>
                     </ul>
                 </li>
@@ -343,17 +597,24 @@
                     <a href="#" id="teacher_attendance" data-toggle="collapse" data-target="#">Attendance</a>
                 </li>
                 <li>
-                    <a href="#" id="teachers_test" data-toggle="collapse" data-target="#Reports">Reports</a>
+                    <a href="#" id="report" data-toggle="collapse" data-target="#Reports">Reports</a>
                     <ul class="nav nav-stacked collapse" id="Reports">
-
+                       
                         <li><a id="ReportByAssignmnet" href="#"><i class="glyphicon glyphicon-list"></i> Report of Assignment</a></li>
-                        <li><a id="ReportByMultipleAssignmnet" href="#"><i class="glyphicon glyphicon-list"></i> Report of All Assignments</a></li>
-                        <li><a id="ReportByTest" href="#"><i class="glyphicon glyphicon-list"></i> Report of Test</a></li>
-                        <li><a id="ReportByMultipleTest" href="#"><i class="glyphicon glyphicon-list"></i> Report of All Test</a></li>
-                        <li><a id="ReportByExam" href="#"><i class="glyphicon glyphicon-list"></i> Report of Exam</a></li>
-                        <li><a id="ReportByMultipleExam" href="#"><i class="glyphicon glyphicon-list"></i> Report of All Exam</a></li>
-                        <li><a id="ReportByStudent" href="#"><i class="glyphicon glyphicon-list"></i>Student Report</a></li>
                     </ul>
+                </li>
+
+                <li>
+                    <a href="#" id="teachers_curriculum" data-toggle="collapse" data-target="#Curriculum">Curriculum</a>
+                    <ul class="nav nav-stacked collapse" id="Curriculum">
+                        <li><a href="#" id="Class_Curriculum" data-toggle="collapse" data-target="#"><i class="glyphicon glyphicon-list"></i> Add Curriculum</a></li>
+                        <li><a id="ViewCurriculum" href="#"><i class="glyphicon glyphicon-list"></i> View Curriculum</a></li>
+                    </ul>
+                </li>
+
+
+                <li class="nav-header">
+                    
                 </li>
 
             </ul>

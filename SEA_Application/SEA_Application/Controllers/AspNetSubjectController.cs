@@ -70,6 +70,8 @@ namespace SEA_Application.Controllers
         public ActionResult SubjectfromFile(AspNetSubject aspNetSubject)
         {
             // if (ModelState.IsValid)
+            var dbTransaction = db.Database.BeginTransaction();
+            try
             {
                 HttpPostedFileBase file = Request.Files["subjects"];
                 if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
@@ -108,8 +110,9 @@ namespace SEA_Application.Controllers
 
                     }
                 }
-
+                dbTransaction.Commit();
             }
+            catch (Exception) { dbTransaction.Dispose(); }
 
             // ViewBag.TeacherID = new SelectList(db.AspNetUsers, "Id", "Name", aspNetClass.TeacherID);
             return View(aspNetSubject);

@@ -9,6 +9,87 @@
                };
 
     $(document).ready(function () {
+
+
+        var subjectcookieval = null;
+        var ClassCookie_ExamMarksval = null;
+        var ExamCookie_ExamMarksval = null;
+        var allcookies = document.cookie;
+
+        // Get all the cookies pairs in an array
+        cookiearray = allcookies.split(';');
+
+        // Now take key value pair out of this array
+        for (var i = 0; i < cookiearray.length; i++) {
+            name = cookiearray[i].split('=')[0];
+            value = cookiearray[i].split('=')[1];
+
+            console.log(cookiearray[i]);
+
+            if (cookiearray[i].split('=')[0] == " ClassCookie_ExamMarks" || cookiearray[i].split('=')[0] == "ClassCookie_ExamMarks") {
+                ClassCookie_ExamMarksval = cookiearray[i].split('=')[1];
+
+            }
+
+            if (cookiearray[i].split('=')[0] == " SubjectsCookie_ExamMarks" || cookiearray[i].split('=')[0] == "SubjectsCookie_ExamMarks") {
+                subjectcookieval = cookiearray[i].split('=')[1];
+
+            }
+            if (cookiearray[i].split('=')[0] == " ExamCookie_ExamMarks" || cookiearray[i].split('=')[0] == "ExamCookie_ExamMarks") {
+                ExamCookie_ExamMarksval = cookiearray[i].split('=')[1];
+
+            } 
+        }
+        console.log("classval", ClassCookie_ExamMarksval);
+
+        console.log("subval", subjectcookieval);
+        if (ClassCookie_ExamMarksval != null && subjectcookieval != null) {
+
+            var selectClass = document.getElementById('ClassID');
+            selectClass.value = ClassCookie_ExamMarksval;
+
+
+            $.get('@Url.Action("SubjectsByClass")',
+                    { id: ClassCookie_ExamMarksval }, function (data) {
+                        //alert(JSON.stringify(data));
+                        $('#subjects').html('');
+                        $('#subjects').prop('disabled', false);
+                        $.each(data, function (i, item) {
+                            $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                        });
+                            $.get('@Url.Action("ExamsBySubject", "Teacher_Dashboard")',
+                                { id: subjectcookieval }, function (data) {
+
+                                    $('#exam').html('');
+                                    $('#exam').prop('disabled', false);
+                                    $.each(data, function (i, item) {
+                                        $('#exam').append('<option value=' + item.Id + '>' + item.Title + '</option>');
+                                    });
+
+                                    var selectedExam = $("#exam").val();
+                                    $('#save_marks').prop('disabled', false);
+                                    $('#ExamMarks').prop('disabled', false);
+                                    $('#Submit').prop('disabled', false);
+
+                                    $.get('@Url.Action("SubmissionByExam", "Teacher_Dashboard")',
+                                        { id: selectedExam }, function (data) {
+
+                                            $('#marks_table').html('');
+
+                                            $.each(data, function (i, item) {
+                                                $('#marks_table').append('<tr id=' + item.exam.Id + '><td>' + item.Name + '</td><td><input type="text" class="form-control" id="GotMarks" value=' + item.exam.MarksGot + '></td></tr>');
+                                            });
+
+                                        });
+                                });
+                        });
+        }
+
+
+
+
+
+
         $('#save_marks').click(function () {
             Marks = [];
             $('table tbody tr').each(function () {
@@ -36,6 +117,8 @@
         });
         $("#ClassID").click(function () {
             var selectedClass = $("#ClassID").val();
+            document.cookie = "ClassCookie_ExamMarks=" + selectedClass + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+
             $.get('@Url.Action("SubjectsByClass")',
                 { id: selectedClass }, function (data) {
 
@@ -50,6 +133,8 @@
         });
         $("#subjects").click(function () {
             var selectedSubject = $("#subjects").val();
+            document.cookie = "SubjectsCookie_ExamMarks=" + selectedSubject + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+
             $.get('@Url.Action("ExamsBySubject", "Teacher_Dashboard")',
                 { id: selectedSubject }, function (data) {
 
@@ -63,13 +148,15 @@
         });
 
         $("#exam").click(function () {
-            var selectedAssignment = $("#exam").val();
+            var selectedExam = $("#exam").val();
+            document.cookie = "ExamCookie_ExamMarks=" + selectedExam + ";expires=Thu, 2 Aug 2018 20:47:11 UTC; path=/";
+
             $('#save_marks').prop('disabled', false);
             $('#ExamMarks').prop('disabled', false);
             $('#Submit').prop('disabled', false);
 
             $.get('@Url.Action("SubmissionByExam", "Teacher_Dashboard")',
-                { id: selectedAssignment }, function (data) {
+                { id: selectedExam }, function (data) {
 
                     $('#marks_table').html('');
                     

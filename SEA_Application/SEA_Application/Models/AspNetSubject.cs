@@ -22,6 +22,7 @@ namespace SEA_Application.Models
             this.AspNetAttendances = new HashSet<AspNetAttendance>();
             this.AspNetExams = new HashSet<AspNetExam>();
             this.AspNetStudent_Subject = new HashSet<AspNetStudent_Subject>();
+            this.AspNetSubject_Curriculum = new HashSet<AspNetSubject_Curriculum>();
             this.AspNetTopics = new HashSet<AspNetTopic>();
             this.AspNetTests = new HashSet<AspNetTest>();
         }
@@ -42,6 +43,8 @@ namespace SEA_Application.Models
         public virtual ICollection<AspNetExam> AspNetExams { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetStudent_Subject> AspNetStudent_Subject { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AspNetSubject_Curriculum> AspNetSubject_Curriculum { get; set; }
         public virtual AspNetUser AspNetUser { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetTopic> AspNetTopics { get; set; }

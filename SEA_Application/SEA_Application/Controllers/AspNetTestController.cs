@@ -27,6 +27,19 @@ namespace SEA_Application.Controllers
             return View(aspNetTests.ToList());
         }
 
+
+        public PartialViewResult View_Test(string id)
+        {
+            ViewBag.SubjectID = new SelectList(db.AspNetSubjects.Where(s => s.TeacherID == TeacherID), "Id", "SubjectName");
+            ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+            var aspNetTests = db.AspNetTests.Include(a=>a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID == TeacherID);
+            //var aspNetAssignments = db.AspNetAssignments.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID == TeacherID);
+            return PartialView("_View_Tests");
+
+        }
+
+
+
         // GET: AspNetTest/Details/5
         public ActionResult Details(int? id)
         {
@@ -61,30 +74,37 @@ namespace SEA_Application.Controllers
             IEnumerable<string> topics = Request.Form["TopicID"].Split(',');
             if (ModelState.IsValid)
             {
-                db.AspNetTests.Add(aspNetTest);
-                db.SaveChanges();
+                var dbTransaction = db.Database.BeginTransaction();
+                try {
 
-                int testID = db.AspNetTests.Max(item => item.Id);
-                List<string> StudentIDs = db.AspNetStudent_Subject.Where(s => s.SubjectID == aspNetTest.SubjectID).Select(s => s.StudentID).ToList();
-                foreach (var item in StudentIDs)
-                {
-                    AspNetStudent_Test stu_test = new AspNetStudent_Test();
-                    stu_test.StudentID = item;
-                    stu_test.TestID = testID;
-                    db.AspNetStudent_Test.Add(stu_test);
+                    db.AspNetTests.Add(aspNetTest);
                     db.SaveChanges();
+
+                    int testID = db.AspNetTests.Max(item => item.Id);
+                    List<string> StudentIDs = db.AspNetStudent_Subject.Where(s => s.SubjectID == aspNetTest.SubjectID).Select(s => s.StudentID).ToList();
+                    foreach (var item in StudentIDs)
+                    {
+                        AspNetStudent_Test stu_test = new AspNetStudent_Test();
+                        stu_test.StudentID = item;
+                        stu_test.TestID = testID;
+                        db.AspNetStudent_Test.Add(stu_test);
+                        db.SaveChanges();
+                    }
+
+                    foreach (var item in topics)
+                    {
+                        AspNetTest_Topic test_topic = new AspNetTest_Topic();
+                        test_topic.TopicID = Convert.ToInt32(item);
+                        test_topic.TestID = testID;
+                        db.AspNetTest_Topic.Add(test_topic);
+                        db.SaveChanges();
+                    }
+                    return RedirectToAction("Index");
+                    dbTransaction.Commit();
                 }
-               
-                foreach (var item in topics)
-                {
-                    AspNetTest_Topic test_topic = new AspNetTest_Topic();
-                    test_topic.TopicID = Convert.ToInt32(item);
-                    test_topic.TestID = testID;
-                    db.AspNetTest_Topic.Add(test_topic);
-                    db.SaveChanges();
+                catch (Exception) { dbTransaction.Dispose(); }
                 }
-                return RedirectToAction("Index");
-            }
+            
 
             ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
             ViewBag.SubjectID = new SelectList(db.AspNetSubjects.Where(s => s.TeacherID == TeacherID), "Id", "SubjectName");

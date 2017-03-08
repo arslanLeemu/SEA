@@ -30,6 +30,32 @@ namespace SEA_Application.Controllers
             return View(aspNetExams.ToList());
         }
 
+        public PartialViewResult View_Exam(string id)
+        {
+            ViewBag.SubjectID = new SelectList(db.AspNetSubjects.Where(s => s.TeacherID == TeacherID), "Id", "SubjectName");
+            ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+            var aspNetExams = db.AspNetExams.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser);
+            //var aspNetTests = db.AspNetTests.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID == TeacherID);
+            //var aspNetAssignments = db.AspNetAssignments.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID == TeacherID);
+            return PartialView("_View_Exam");
+
+        }
+
+        [HttpGet]
+        public JsonResult ExamsBySubject(int id)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            //List<AspNetTest> tests = (from test in db.AspNetTests
+            //                          where test.SubjectID == id
+            //                          select test).ToList();
+            List<AspNetExam> exams = (from exam in db.AspNetExams
+                                      where exam.SubjectID == id
+                                      select exam).ToList();
+
+            return Json(exams, JsonRequestBehavior.AllowGet);
+        }
+
+
         // GET: AspNetExam/Details/5
         public ActionResult Details(int? id)
         {
@@ -61,23 +87,30 @@ namespace SEA_Application.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,SubjectID,ClassID,Title,Description,Date,TotalMarks,Weightage,TeacherID")] AspNetExam aspNetExam)
         {
-            if (ModelState.IsValid)
-            {
-                db.AspNetExams.Add(aspNetExam);
-                db.SaveChanges();
-
-                int examID = db.AspNetExams.Max(item => item.Id);
-                List<string> StudentIDs = db.AspNetStudent_Subject.Where(s => s.SubjectID == aspNetExam.SubjectID).Select(s => s.StudentID).ToList();
-                foreach (var item in StudentIDs)
+            var dbTransection = db.Database.BeginTransaction();
+            try {
+                if (ModelState.IsValid)
                 {
-                    AspNetStudent_Exam stu_exams = new AspNetStudent_Exam();
-                    stu_exams.StudentID = item;
-                    stu_exams.ExamID = examID;
-                    db.AspNetStudent_Exam.Add(stu_exams);
+                    db.AspNetExams.Add(aspNetExam);
                     db.SaveChanges();
+
+                    int examID = db.AspNetExams.Max(item => item.Id);
+                    List<string> StudentIDs = db.AspNetStudent_Subject.Where(s => s.SubjectID == aspNetExam.SubjectID).Select(s => s.StudentID).ToList();
+                    foreach (var item in StudentIDs)
+                    {
+                        AspNetStudent_Exam stu_exams = new AspNetStudent_Exam();
+                        stu_exams.StudentID = item;
+                        stu_exams.ExamID = examID;
+                        db.AspNetStudent_Exam.Add(stu_exams);
+                        db.SaveChanges();
+                    }
                 }
-                return RedirectToAction("Index");
-            }
+                    dbTransection.Commit();
+                }
+            catch (Exception) { dbTransection.Dispose(); }
+
+            return RedirectToAction("Index");
+            
 
             ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
             ViewBag.SubjectID = new SelectList(db.AspNetSubjects.Where(s => s.TeacherID == TeacherID), "Id", "SubjectName");
@@ -122,6 +155,22 @@ namespace SEA_Application.Controllers
             
             return View(aspNetExam);
         }
+
+
+
+        //public PartialViewResult Student_Exams(string id)
+        //{
+        //    ViewBag.SubjectID = new SelectList(db.AspNetSubjects, "Id", "SubjectName");
+        //    ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+        //    var aspNetExams = db.AspNetExams.Include(a => a.AspNetSubject).Include(a => a.AspNetUser);
+        //    //var aspNetAssignments = db.AspNetAssignments.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID == TeacherID);
+        //    return PartialView("_Student_Exams");
+
+        //}
+
+
+
+
 
         // GET: AspNetExam/Delete/5
         public ActionResult Delete(int? id)

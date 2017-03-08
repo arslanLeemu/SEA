@@ -10,12 +10,10 @@ using SEA_Application.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System.IO;
-using System.EnterpriseServices;
 
 namespace SEA_Application.Controllers
 {
     [Authorize(Roles = "Teacher")]
-  
     public class AspNetAssignmentController : Controller
     {
         private SEA_DatabaseEntities db = new SEA_DatabaseEntities();
@@ -37,6 +35,19 @@ namespace SEA_Application.Controllers
             var aspNetAssignments = db.AspNetAssignments.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID==TeacherID);
             return View(aspNetAssignments.ToList());
         }
+
+
+
+        public PartialViewResult View_Assignments(string id)
+        {
+            ViewBag.SubjectID = new SelectList(db.AspNetSubjects.Where(s => s.TeacherID == TeacherID), "Id", "SubjectName");
+            ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+
+            var aspNetAssignments = db.AspNetAssignments.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID == TeacherID);
+            return PartialView("_View_Assignments");
+
+        }
+
 
         // GET: AspNetAssignment/Details/5
         public ActionResult Details(int? id)
@@ -67,10 +78,8 @@ namespace SEA_Application.Controllers
         // POST: AspNetAssignment/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
         public ActionResult Create([Bind(Include = "Id,SubjectID,ClassID,PublishDate,DueDate,Description,TotalMarks,Weightage,Title,FileName,TeacherID")] AspNetAssignment aspNetAssignment)
         {
             IEnumerable<string> topics = Request.Form["TopicID"].Split(',');

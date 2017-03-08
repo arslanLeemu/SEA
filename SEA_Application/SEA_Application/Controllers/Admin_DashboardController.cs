@@ -109,7 +109,9 @@ namespace SEA_Application.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> TeacherfromFile(RegisterViewModel model)
         {
-           // if (ModelState.IsValid)
+            // if (ModelState.IsValid)
+            var dbTransaction = db.Database.BeginTransaction();
+            try
             {
                 HttpPostedFileBase file = Request.Files["teachers"];
                 if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
@@ -130,25 +132,25 @@ namespace SEA_Application.Controllers
                     for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
                     {
                         var teacher = new RegisterViewModel();
-                        teacher.Email= workSheet.Cells[rowIterator, 1].Value.ToString();
-                        teacher.Name= workSheet.Cells[rowIterator, 2].Value.ToString();
-                        teacher.UserName= workSheet.Cells[rowIterator, 3].Value.ToString();
-                        teacher.Password= workSheet.Cells[rowIterator, 4].Value.ToString();
-                        teacher.ConfirmPassword= workSheet.Cells[rowIterator, 5].Value.ToString();
-                        var checkUserName= await UserManager.FindByNameAsync(teacher.UserName);
-                        if(checkUserName != null)
+                        teacher.Email = workSheet.Cells[rowIterator, 1].Value.ToString();
+                        teacher.Name = workSheet.Cells[rowIterator, 2].Value.ToString();
+                        teacher.UserName = workSheet.Cells[rowIterator, 3].Value.ToString();
+                        teacher.Password = workSheet.Cells[rowIterator, 4].Value.ToString();
+                        teacher.ConfirmPassword = workSheet.Cells[rowIterator, 5].Value.ToString();
+                        var checkUserName = await UserManager.FindByNameAsync(teacher.UserName);
+                        if (checkUserName != null)
                         {
                             var localTeacher = new ApplicationUser { UserName = teacher.UserName, Email = teacher.Email, Name = teacher.Name };
                             var localresult = await UserManager.CreateAsync(localTeacher, teacher.Password);
                             AddErrors(localresult);
-                            return View("TeacherRegister",model);
-                            
+                            return View("TeacherRegister", model);
+
                         }
                         else
                         {
                             teacherList.Add(teacher);
                         }
-                       
+
                     }
                 }
                 ApplicationDbContext context = new ApplicationDbContext();
@@ -168,9 +170,13 @@ namespace SEA_Application.Controllers
                     {
                         AddErrors(result);
                         return View("TeacherRegister", model);
-                    }     
+                    }
                 }
+                dbTransaction.Commit();
             }
+            catch(Exception)
+            { dbTransaction.Dispose(); }
+
             return RedirectToAction("TeacherIndex", "AspNetUser");
         }
 
@@ -191,34 +197,43 @@ namespace SEA_Application.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> StudentRegister(RegisterViewModel model)
         {
+            
             if (ModelState.IsValid)
             {
                 ApplicationDbContext context = new ApplicationDbContext();
                 IEnumerable<string> selectedsubjects = Request.Form["subjects"].Split(',');
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, Name = model.Name };
                 var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    var roleStore = new RoleStore<IdentityRole>(context);
-                    var roleManager = new RoleManager<IdentityRole>(roleStore);
 
-                    var userStore = new UserStore<ApplicationUser>(context);
-                    var userManager = new UserManager<ApplicationUser>(userStore);
-                    userManager.AddToRole(user.Id, "Student");
-                
-                   
-                    foreach (var item in selectedsubjects)
+                var dbTransaction = db.Database.BeginTransaction();
+                try
+                {
+                    if (result.Succeeded)
                     {
-                        AspNetStudent_Subject stu_sub = new AspNetStudent_Subject();
-                        stu_sub.StudentID = user.Id;
-                        stu_sub.SubjectID = Convert.ToInt32(item);
-                        db.AspNetStudent_Subject.Add(stu_sub);
-                        db.SaveChanges();
+                        var roleStore = new RoleStore<IdentityRole>(context);
+                        var roleManager = new RoleManager<IdentityRole>(roleStore);
+
+                        var userStore = new UserStore<ApplicationUser>(context);
+                        var userManager = new UserManager<ApplicationUser>(userStore);
+                        userManager.AddToRole(user.Id, "Student");
+
+
+                        foreach (var item in selectedsubjects)
+                        {
+                            AspNetStudent_Subject stu_sub = new AspNetStudent_Subject();
+                            stu_sub.StudentID = user.Id;
+                            stu_sub.SubjectID = Convert.ToInt32(item);
+                            db.AspNetStudent_Subject.Add(stu_sub);
+                            db.SaveChanges();
+                        }
+                        return RedirectToAction("Index", "Home");
                     }
-                    return RedirectToAction("Index", "Home");
+                    dbTransaction.Commit();
                 }
+                catch (Exception) { dbTransaction.Dispose(); }
                 AddErrors(result);
             }
+        
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -230,6 +245,8 @@ namespace SEA_Application.Controllers
         public async Task<ActionResult> StudentfromFile(RegisterViewModel model)
         {
             // if (ModelState.IsValid)
+            var dbTransaction = db.Database.BeginTransaction();
+            try
             {
                 HttpPostedFileBase file = Request.Files["students"];
                 if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
@@ -324,7 +341,9 @@ namespace SEA_Application.Controllers
                     }
                     rowIteratortemp++;
                 }
+                dbTransaction.Commit();
             }
+            catch (Exception) { dbTransaction.Dispose(); }
             return RedirectToAction("StudentsIndex", "AspNetUser");
            // return View("StudentIndex","Asp);
         }

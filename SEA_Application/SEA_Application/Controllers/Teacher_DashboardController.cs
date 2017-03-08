@@ -49,7 +49,7 @@ namespace SEA_Application.Controllers
             ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
             return PartialView("_Topics");
         }
-        
+
 
         /******************************************************************************************************************
          * 
@@ -71,6 +71,14 @@ namespace SEA_Application.Controllers
 
         }
 
+
+        public class NewCurriculums
+        {
+            // public int Id { get; set; }
+            public int WeightageValue { get; set; }
+            public int CurriculumID { get; set; }
+            public int SubjectID { get; set; }
+        }
 
 
         /******************************************************************************************************************
@@ -109,6 +117,21 @@ namespace SEA_Application.Controllers
             return Json(assignments, JsonRequestBehavior.AllowGet);
         }
 
+
+        [HttpGet]
+        public JsonResult TestsBySubject(int id)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            List<AspNetTest> tests = (from test in db.AspNetTests
+                                      where test.SubjectID == id
+                                      select test).ToList();
+
+            return Json(tests, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
         [HttpGet]
         public JsonResult SubmissionByAssignment(int id)
         {
@@ -116,7 +139,7 @@ namespace SEA_Application.Controllers
             var assignments = (from assignmentsubmission in db.Student_Assignment
                                where assignmentsubmission.AssignmentID == id
                                select new { assignmentsubmission, assignmentsubmission.AspNetUser.Name }).ToList();
-           
+
             return Json(assignments, JsonRequestBehavior.AllowGet);
         }
 
@@ -153,8 +176,8 @@ namespace SEA_Application.Controllers
         {
             db.Configuration.ProxyCreationEnabled = false;
             List<AspNetExam> exams = (from exam in db.AspNetExams
-                                                  where exam.SubjectID == id
-                                                  select exam).ToList();
+                                      where exam.SubjectID == id
+                                      select exam).ToList();
 
             return Json(exams, JsonRequestBehavior.AllowGet);
         }
@@ -164,8 +187,8 @@ namespace SEA_Application.Controllers
         {
             db.Configuration.ProxyCreationEnabled = false;
             var exams = (from exam in db.AspNetStudent_Exam
-                               where exam.ExamID == id
-                               select new { exam, exam.AspNetUser.Name }).ToList();
+                         where exam.ExamID == id
+                         select new { exam, exam.AspNetUser.Name }).ToList();
 
             return Json(exams, JsonRequestBehavior.AllowGet);
         }
@@ -190,18 +213,6 @@ namespace SEA_Application.Controllers
                          select new { test, test.AspNetUser.Name }).ToList();
 
             return Json(tests, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public JsonResult StudentsBySubject(int id)
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            var students = (from student_subject in db.AspNetStudent_Subject
-                            join student in db.AspNetUsers on student_subject.StudentID equals student.Id
-                         where student_subject.SubjectID == id
-                         select new { student.UserName, student.Name,student.Id}).ToList();
-
-            return Json(students, JsonRequestBehavior.AllowGet);
         }
         /******************************************************************************************************************
          * 
@@ -237,79 +248,14 @@ namespace SEA_Application.Controllers
         [HttpPost]
         public void SaveAssignmentMarks(List<Marks> marks)
         {
-            foreach (var item in marks)
+            var dbContextTransaction = db.Database.BeginTransaction();
+            try
             {
-                Student_Assignment stu_assign = new Student_Assignment();
-                stu_assign.Id = item.Id;
-                stu_assign.MarksGot = item.GotMark;
-                var check = db.Student_Assignment.Any(x => x.Id == stu_assign.Id);
-                if (check)
-                {
-                    Student_Assignment student_assignment = (from x in db.Student_Assignment
-                                                             where x.Id == stu_assign.Id
-                                                             select x).First();
-                    student_assignment.MarksGot = stu_assign.MarksGot;
-                }
-                db.SaveChanges();
-            }
-
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult AssignmentMarksFromFile(Student_Assignment Stu_Assign)
-        {
-            HttpPostedFileBase file = Request.Files["AssignmentMarks"];
-            if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
-            {
-                string fileName = file.FileName;
-                string fileContentType = file.ContentType;
-                byte[] fileBytes = new byte[file.ContentLength];
-                var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
-            }
-
-            List<Marks> MarkList = new List<Marks>();
-            using (var package = new ExcelPackage(file.InputStream))
-            {
-                var currentSheet = package.Workbook.Worksheets;
-                var workSheet = currentSheet.First();
-                var noOfCol = workSheet.Dimension.End.Column;
-                var noOfRow = workSheet.Dimension.End.Row;
-                int AssignmentID = Convert.ToInt32(Request.Form["assignment"]);
-                for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
-                {
-                    string UserName = workSheet.Cells[rowIterator, 1].Value.ToString();
-                    Student_Assignment stu_assign;
-                    try
-                    {
-                        stu_assign = (from student_assignment in db.Student_Assignment
-                                      where student_assignment.AspNetUser.UserName == UserName && student_assignment.AssignmentID == AssignmentID
-                                      select student_assignment).First();
-                    }
-                    catch
-                    {
-                        ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
-                        ViewBag.Error = "There is a problem at row" + rowIterator;
-
-                        return View("_Assignments_Marks", Stu_Assign);
-                    }
-
-
-
-                    Marks mark = new Marks();
-                    mark.Id = stu_assign.Id;
-                    mark.GotMark = Convert.ToInt32(workSheet.Cells[rowIterator, 2].Value.ToString());
-                    MarkList.Add(mark);
-
-                }
-                foreach (var item in MarkList)
+                foreach (var item in marks)
                 {
                     Student_Assignment stu_assign = new Student_Assignment();
                     stu_assign.Id = item.Id;
                     stu_assign.MarksGot = item.GotMark;
-
-
                     var check = db.Student_Assignment.Any(x => x.Id == stu_assign.Id);
                     if (check)
                     {
@@ -320,6 +266,90 @@ namespace SEA_Application.Controllers
                     }
                     db.SaveChanges();
                 }
+                dbContextTransaction.Commit();
+            }
+            catch (Exception)
+            {
+                dbContextTransaction.Dispose();
+            }
+
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult AssignmentMarksFromFile(Student_Assignment Stu_Assign)
+        {
+            var dbContextTransaction = db.Database.BeginTransaction();
+            try
+            {
+
+                HttpPostedFileBase file = Request.Files["AssignmentMarks"];
+                if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
+                {
+                    string fileName = file.FileName;
+                    string fileContentType = file.ContentType;
+                    byte[] fileBytes = new byte[file.ContentLength];
+                    var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
+                }
+
+                List<Marks> MarkList = new List<Marks>();
+                using (var package = new ExcelPackage(file.InputStream))
+                {
+                    var currentSheet = package.Workbook.Worksheets;
+                    var workSheet = currentSheet.First();
+                    var noOfCol = workSheet.Dimension.End.Column;
+                    var noOfRow = workSheet.Dimension.End.Row;
+                    int AssignmentID = Convert.ToInt32(Request.Form["assignment"]);
+                    for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
+                    {
+                        string UserName = workSheet.Cells[rowIterator, 1].Value.ToString();
+                        Student_Assignment stu_assign;
+                        try
+                        {
+                            stu_assign = (from student_assignment in db.Student_Assignment
+                                          where student_assignment.AspNetUser.UserName == UserName && student_assignment.AssignmentID == AssignmentID
+                                          select student_assignment).First();
+                        }
+                        catch
+                        {
+                            ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+                            ViewBag.Error = "There is a problem at row" + rowIterator;
+
+                            return View("_Assignments_Marks", Stu_Assign);
+                        }
+
+
+
+                        Marks mark = new Marks();
+                        mark.Id = stu_assign.Id;
+                        mark.GotMark = Convert.ToInt32(workSheet.Cells[rowIterator, 2].Value.ToString());
+                        MarkList.Add(mark);
+
+                    }
+                    foreach (var item in MarkList)
+                    {
+                        Student_Assignment stu_assign = new Student_Assignment();
+                        stu_assign.Id = item.Id;
+                        stu_assign.MarksGot = item.GotMark;
+
+
+                        var check = db.Student_Assignment.Any(x => x.Id == stu_assign.Id);
+                        if (check)
+                        {
+                            Student_Assignment student_assignment = (from x in db.Student_Assignment
+                                                                     where x.Id == stu_assign.Id
+                                                                     select x).First();
+                            student_assignment.MarksGot = stu_assign.MarksGot;
+                        }
+                        db.SaveChanges();
+                    }
+                }
+                dbContextTransaction.Commit();
+            }
+            catch (Exception)
+            {
+                dbContextTransaction.Dispose();
             }
             return RedirectToAction("Teacher_Dashboard");
         }
@@ -339,20 +369,29 @@ namespace SEA_Application.Controllers
         [HttpPost]
         public void SaveExamMarks(List<Marks> marks)
         {
-            foreach (var item in marks)
+            var dbcontextvar = db.Database.BeginTransaction();
+            try
             {
-                AspNetStudent_Exam stu_exam = new AspNetStudent_Exam();
-                stu_exam.Id = item.Id;
-                stu_exam.MarksGot = item.GotMark;
-                var check = db.AspNetStudent_Exam.Any(x => x.Id == stu_exam.Id);
-                if (check)
+                foreach (var item in marks)
                 {
-                    AspNetStudent_Exam student_exam = (from x in db.AspNetStudent_Exam
-                                                       where x.Id == stu_exam.Id
-                                                             select x).First();
-                    student_exam.MarksGot = stu_exam.MarksGot;
+                    AspNetStudent_Exam stu_exam = new AspNetStudent_Exam();
+                    stu_exam.Id = item.Id;
+                    stu_exam.MarksGot = item.GotMark;
+                    var check = db.AspNetStudent_Exam.Any(x => x.Id == stu_exam.Id);
+                    if (check)
+                    {
+                        AspNetStudent_Exam student_exam = (from x in db.AspNetStudent_Exam
+                                                           where x.Id == stu_exam.Id
+                                                           select x).First();
+                        student_exam.MarksGot = stu_exam.MarksGot;
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
+                dbcontextvar.Commit();
+            }
+            catch (Exception)
+            {
+                dbcontextvar.Dispose();
             }
 
         }
@@ -362,6 +401,7 @@ namespace SEA_Application.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ExamMarksFromFile(AspNetStudent_Exam Stu_Exam)
         {
+
             HttpPostedFileBase file = Request.Files["ExamMarks"];
             if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
             {
@@ -370,59 +410,64 @@ namespace SEA_Application.Controllers
                 byte[] fileBytes = new byte[file.ContentLength];
                 var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
             }
-
-            List<Marks> MarkList = new List<Marks>();
-            using (var package = new ExcelPackage(file.InputStream))
+            var dbContextTransaction = db.Database.BeginTransaction();
+            try
             {
-                var currentSheet = package.Workbook.Worksheets;
-                var workSheet = currentSheet.First();
-                var noOfCol = workSheet.Dimension.End.Column;
-                var noOfRow = workSheet.Dimension.End.Row;
-                int ExamID = Convert.ToInt32(Request.Form["exam"]);
-                for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
+                List<Marks> MarkList = new List<Marks>();
+                using (var package = new ExcelPackage(file.InputStream))
                 {
-                    string UserName = workSheet.Cells[rowIterator, 1].Value.ToString();
-                    AspNetStudent_Exam stu_exam;
-                    try
+                    var currentSheet = package.Workbook.Worksheets;
+                    var workSheet = currentSheet.First();
+                    var noOfCol = workSheet.Dimension.End.Column;
+                    var noOfRow = workSheet.Dimension.End.Row;
+                    int ExamID = Convert.ToInt32(Request.Form["exam"]);
+                    for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
                     {
-                        stu_exam = (from student_exam in db.AspNetStudent_Exam
-                                    where student_exam.AspNetUser.UserName == UserName && student_exam.ExamID == ExamID
-                                    select student_exam).First();
+                        string UserName = workSheet.Cells[rowIterator, 1].Value.ToString();
+                        AspNetStudent_Exam stu_exam;
+                        try
+                        {
+                            stu_exam = (from student_exam in db.AspNetStudent_Exam
+                                        where student_exam.AspNetUser.UserName == UserName && student_exam.ExamID == ExamID
+                                        select student_exam).First();
+                        }
+                        catch
+                        {
+                            ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+                            ViewBag.Error = "There is a problem at row" + rowIterator;
+
+                            return View("_Exam_Marks", Stu_Exam);
+                        }
+
+
+
+                        Marks mark = new Marks();
+                        mark.Id = stu_exam.Id;
+                        mark.GotMark = Convert.ToInt32(workSheet.Cells[rowIterator, 2].Value.ToString());
+                        MarkList.Add(mark);
+
                     }
-                    catch
+                    foreach (var item in MarkList)
                     {
-                        ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
-                        ViewBag.Error = "There is a problem at row" + rowIterator;
+                        AspNetStudent_Exam stu_exam = new AspNetStudent_Exam();
+                        stu_exam.Id = item.Id;
+                        stu_exam.MarksGot = item.GotMark;
 
-                        return View("_Exam_Marks", Stu_Exam);
+
+                        var check = db.AspNetStudent_Exam.Any(x => x.Id == stu_exam.Id);
+                        if (check)
+                        {
+                            AspNetStudent_Exam student_exam = (from x in db.AspNetStudent_Exam
+                                                               where x.Id == stu_exam.Id
+                                                               select x).First();
+                            student_exam.MarksGot = stu_exam.MarksGot;
+                        }
+                        db.SaveChanges();
                     }
-
-
-
-                    Marks mark = new Marks();
-                    mark.Id = stu_exam.Id;
-                    mark.GotMark = Convert.ToInt32(workSheet.Cells[rowIterator, 2].Value.ToString());
-                    MarkList.Add(mark);
-
-                }
-                foreach (var item in MarkList)
-                {
-                    AspNetStudent_Exam stu_exam = new AspNetStudent_Exam();
-                    stu_exam.Id = item.Id;
-                    stu_exam.MarksGot = item.GotMark;
-
-
-                    var check = db.AspNetStudent_Exam.Any(x => x.Id == stu_exam.Id);
-                    if (check)
-                    {
-                        AspNetStudent_Exam student_exam = (from x in db.AspNetStudent_Exam
-                                                                 where x.Id == stu_exam.Id
-                                                                 select x).First();
-                        student_exam.MarksGot = stu_exam.MarksGot;
-                    }
-                    db.SaveChanges();
+                    dbContextTransaction.Commit();
                 }
             }
+            catch (Exception) { dbContextTransaction.Dispose(); }
             return RedirectToAction("Teacher_Dashboard");
         }
         /******************************************************************************************************************
@@ -440,21 +485,28 @@ namespace SEA_Application.Controllers
         [HttpPost]
         public void SaveTestMarks(List<Marks> marks)
         {
-            foreach (var item in marks)
+            var dbTransaction = db.Database.BeginTransaction();
+            try
             {
-                AspNetStudent_Test stu_test = new AspNetStudent_Test();
-                stu_test.Id = item.Id;
-                stu_test.MarksGot = item.GotMark;
-                var check = db.AspNetStudent_Exam.Any(x => x.Id == stu_test.Id);
-                if (check)
+
+                foreach (var item in marks)
                 {
-                    AspNetStudent_Test student_test = (from x in db.AspNetStudent_Test
-                                                       where x.Id == stu_test.Id
-                                                       select x).First();
-                    student_test.MarksGot = stu_test.MarksGot;
+                    AspNetStudent_Test stu_test = new AspNetStudent_Test();
+                    stu_test.Id = item.Id;
+                    stu_test.MarksGot = item.GotMark;
+                    var check = db.AspNetStudent_Exam.Any(x => x.Id == stu_test.Id);
+                    if (check)
+                    {
+                        AspNetStudent_Test student_test = (from x in db.AspNetStudent_Test
+                                                           where x.Id == stu_test.Id
+                                                           select x).First();
+                        student_test.MarksGot = stu_test.MarksGot;
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
+                dbTransaction.Commit();
             }
+            catch (Exception) { dbTransaction.Dispose(); }
 
         }
 
@@ -472,60 +524,72 @@ namespace SEA_Application.Controllers
                 var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
             }
 
-            List<Marks> MarkList = new List<Marks>();
-            using (var package = new ExcelPackage(file.InputStream))
+            var dbTransaction = db.Database.BeginTransaction();
+            try
             {
-                var currentSheet = package.Workbook.Worksheets;
-                var workSheet = currentSheet.First();
-                var noOfCol = workSheet.Dimension.End.Column;
-                var noOfRow = workSheet.Dimension.End.Row;
-                int TestID = Convert.ToInt32(Request.Form["test"]);
-                for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
+
+                List<Marks> MarkList = new List<Marks>();
+                using (var package = new ExcelPackage(file.InputStream))
                 {
-                    string UserName = workSheet.Cells[rowIterator, 1].Value.ToString();
-                    AspNetStudent_Test stu_test;
-                    try
+                    var currentSheet = package.Workbook.Worksheets;
+                    var workSheet = currentSheet.First();
+                    var noOfCol = workSheet.Dimension.End.Column;
+                    var noOfRow = workSheet.Dimension.End.Row;
+                    int TestID = Convert.ToInt32(Request.Form["test"]);
+                    for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
                     {
-                        stu_test = (from student_test in db.AspNetStudent_Test
-                                    where student_test.AspNetUser.UserName == UserName && student_test.TestID == TestID
-                                    select student_test).First();
+                        string UserName = workSheet.Cells[rowIterator, 1].Value.ToString();
+                        AspNetStudent_Test stu_test;
+                        try
+                        {
+                            stu_test = (from student_test in db.AspNetStudent_Test
+                                        where student_test.AspNetUser.UserName == UserName && student_test.TestID == TestID
+                                        select student_test).First();
+                        }
+                        catch
+                        {
+                            ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+                            ViewBag.Error = "There is a problem at row" + rowIterator;
+
+                            return View("_Test_Marks", Stu_Test);
+                        }
+
+
+
+                        Marks mark = new Marks();
+                        mark.Id = stu_test.Id;
+                        mark.GotMark = Convert.ToInt32(workSheet.Cells[rowIterator, 2].Value.ToString());
+                        MarkList.Add(mark);
+
                     }
-                    catch
+                    foreach (var item in MarkList)
                     {
-                        ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
-                        ViewBag.Error = "There is a problem at row" + rowIterator;
+                        AspNetStudent_Test stu_test = new AspNetStudent_Test();
+                        stu_test.Id = item.Id;
+                        stu_test.MarksGot = item.GotMark;
 
-                        return View("_Test_Marks", Stu_Test);
+
+                        var check = db.AspNetStudent_Test.Any(x => x.Id == stu_test.Id);
+                        if (check)
+                        {
+                            AspNetStudent_Test student_test = (from x in db.AspNetStudent_Test
+                                                               where x.Id == stu_test.Id
+                                                               select x).First();
+                            student_test.MarksGot = stu_test.MarksGot;
+                        }
+                        db.SaveChanges();
                     }
-
-
-
-                    Marks mark = new Marks();
-                    mark.Id = stu_test.Id;
-                    mark.GotMark = Convert.ToInt32(workSheet.Cells[rowIterator, 2].Value.ToString());
-                    MarkList.Add(mark);
-
                 }
-                foreach (var item in MarkList)
-                {
-                    AspNetStudent_Test stu_test = new AspNetStudent_Test();
-                    stu_test.Id = item.Id;
-                    stu_test.MarksGot = item.GotMark;
-
-
-                    var check = db.AspNetStudent_Test.Any(x => x.Id == stu_test.Id);
-                    if (check)
-                    {
-                        AspNetStudent_Test student_test = (from x in db.AspNetStudent_Test
-                                                           where x.Id == stu_test.Id
-                                                           select x).First();
-                        student_test.MarksGot = stu_test.MarksGot;
-                    }
-                    db.SaveChanges();
-                }
+                dbTransaction.Commit();
             }
+            catch (Exception)
+            { dbTransaction.Dispose(); }
             return RedirectToAction("Teacher_Dashboard");
         }
+
+
+
+
         /******************************************************************************************************************
          * 
          *                                       Attendance Function
@@ -535,34 +599,160 @@ namespace SEA_Application.Controllers
         [HttpPost]
         public void Attendance(List<Students> stu)
         {
-            foreach (var item in stu)
+            var dbTransection = db.Database.BeginTransaction();
+            try
             {
-                AspNetAttendance attendance = new AspNetAttendance();
-                attendance.StudentID = item.Id;
-                attendance.SubjectID = item.SubjectID;
-                attendance.Status = item.Status;
-                attendance.Reason = item.Reason;
-                attendance.Date = DateTime.Now.Date;
-                var check = db.AspNetAttendances.Any(x => x.StudentID == attendance.StudentID && x.SubjectID == attendance.SubjectID && x.Date == attendance.Date);
-                if (check)
+                foreach (var item in stu)
                 {
-                    AspNetAttendance attend = (from x in db.AspNetAttendances
-                                               where x.StudentID == attendance.StudentID && x.SubjectID == attendance.SubjectID && x.Date == attendance.Date
-                                               select x).First();
-                    attend.Status = attendance.Status;
-                    attend.Reason = attendance.Reason;
+                    AspNetAttendance attendance = new AspNetAttendance();
+                    attendance.StudentID = item.Id;
+                    attendance.SubjectID = item.SubjectID;
+                    attendance.Status = item.Status;
+                    attendance.Reason = item.Reason;
+                    attendance.Date = DateTime.Now.Date;
+                    var check = db.AspNetAttendances.Any(x => x.StudentID == attendance.StudentID && x.SubjectID == attendance.SubjectID && x.Date == attendance.Date);
+                    if (check)
+                    {
+                        AspNetAttendance attend = (from x in db.AspNetAttendances
+                                                   where x.StudentID == attendance.StudentID && x.SubjectID == attendance.SubjectID && x.Date == attendance.Date
+                                                   select x).First();
+                        attend.Status = attendance.Status;
+                        attend.Reason = attendance.Reason;
 
 
+                    }
+                    else
+                    {
+                        db.AspNetAttendances.Add(attendance);
+                    }
+                    db.SaveChanges();
                 }
-                else
-                {
-                    db.AspNetAttendances.Add(attendance);
-                }
-                db.SaveChanges();
+                dbTransection.Commit();
             }
+            catch (Exception) { dbTransection.Dispose(); }
         }
-        
-       
 
+
+
+
+
+
+
+
+
+        /******************************************************************************************************************
+         * 
+         *                                       Curriculum Function
+         *                                       
+         ******************************************************************************************************************/
+
+
+
+        public PartialViewResult Class_Curriculum(string id)
+        {
+            ViewBag.SubjectID = new SelectList(db.AspNetSubjects.Where(s => s.TeacherID == TeacherID), "Id", "SubjectName");
+            ViewBag.ClassID = new SelectList(db.AspNetClasses, "Id", "ClassName");
+            ViewBag.CurriculumID = new SelectList(db.AspNetCurriculums, "Id", "CurriculumName");
+
+
+            var aspNetCurriculums = db.AspNetSubject_Curriculum.Include(a => a.AspNetSubject).Include(a => a.AspNetCurriculum.CurriculumName);
+
+            var aspNetAssignments = db.AspNetAssignments.Include(a => a.AspNetClass).Include(a => a.AspNetSubject).Include(a => a.AspNetUser).Where(a => a.TeacherID == TeacherID);
+            return PartialView("_Class_Curriculum");
+        }
+
+
+
+        [HttpGet]
+        public JsonResult CurriculumBySubject(int subjectID)
+        {
+
+
+
+            var curriculums = (from curriculum in db.AspNetSubject_Curriculum
+                               where curriculum.SubjectID == subjectID
+                               select new { curriculum.Id, curriculum.AspNetCurriculum.CurriculumName }).ToList();
+            //ViewBag.curriculums = curriculums;
+            return Json(curriculums, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+
+
+        public JsonResult CurriculumSelect()
+        {
+
+            var curriculums = (from curriculum in db.AspNetCurriculums
+                               select new { curriculum.Id, curriculum.CurriculumName }).ToList();
+            return Json(curriculums, JsonRequestBehavior.AllowGet);
+        }
+
+
+        //[HttpGet]
+        //public ActionResult CurriculumAdd(int RecWeightage, int RecCurric, int RecSubject)
+        //{
+        //    AspNetSubject_Curriculum curricObj = new AspNetSubject_Curriculum();
+        //    curricObj.WeightageValue = RecWeightage;
+        //    curricObj.SubjectID = RecSubject;
+        //    curricObj.CurriculumID = RecCurric;
+        //    db.AspNetSubject_Curriculum.Add(curricObj);
+        //    db.SaveChanges();
+
+        //    return RedirectToAction("AspNetSubject_Curriculum/Index");
+        //}
+
+
+
+        [HttpGet]
+        public PartialViewResult CurriculumById(int curID)
+        {
+
+            ViewBag.CurriculumID = new SelectList(db.AspNetCurriculums.Where(x => x.Id == curID), "Id", "CurriculumName");
+            return PartialView("_Class_Curriculum");
+        }
+
+
+
+
+        [HttpPost]
+        public void Class_Curriculum(List<NewCurriculums> cur)
+        {
+            var dbTransection = db.Database.BeginTransaction();
+            try
+            {
+                foreach (var item in cur)
+                {
+                    AspNetSubject_Curriculum curriculum = new AspNetSubject_Curriculum();
+                    curriculum.SubjectID = item.SubjectID;
+                    curriculum.WeightageValue = item.WeightageValue;
+                    curriculum.CurriculumID = item.CurriculumID;
+                    var check = db.AspNetSubject_Curriculum.Any(x => x.CurriculumID == curriculum.CurriculumID && x.SubjectID == curriculum.SubjectID && x.CurriculumID == curriculum.CurriculumID);
+                    if (check)
+                    {
+                        AspNetSubject_Curriculum curric = (from x in db.AspNetSubject_Curriculum
+                                                           where x.CurriculumID == curriculum.CurriculumID && x.SubjectID == curriculum.SubjectID && x.CurriculumID == curriculum.CurriculumID
+                                                           select x).First();
+                        curric.WeightageValue = curriculum.WeightageValue;
+                        curric.CurriculumID = curriculum.CurriculumID;
+                        curric.SubjectID = curriculum.SubjectID;
+
+
+                    }
+                    else
+                    {
+                        db.AspNetSubject_Curriculum.Add(curriculum);
+                    }
+                    db.SaveChanges();
+
+
+                }
+                dbTransection.Commit();
+            }
+            catch (Exception) { dbTransection.Dispose(); }
+
+
+        }
     }
 }

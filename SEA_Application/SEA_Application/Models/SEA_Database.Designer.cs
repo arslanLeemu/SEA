@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'G:\Technobirds\SEA_Application\SEA_Application\Models\SEA_Database.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Users\saqib\Desktop\SEA_Application 21 feb\SEA_Application\Models\SEA_Database.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

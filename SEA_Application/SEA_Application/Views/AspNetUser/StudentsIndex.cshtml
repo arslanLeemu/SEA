@@ -1,0 +1,87 @@
+﻿@model IEnumerable<SEA_Application.Models.Student_Assignment>
+@{
+    ViewBag.Title = "StudentsIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>StudentsIndex</h2>
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+       
+        $("#ClassID").click(function () {
+            var selectedClass = $("#ClassID").val();
+            console.log(selectedClass);
+
+            $.get('@Url.Action("SubjectsByClass","AspNetUser")',
+                { id: selectedClass }, function (data) {
+
+                    //alert(JSON.stringify(data));
+                    $('#subjects').html('');
+                    $('#subjects').prop('disabled', false);
+                    $.each(data, function (i, item) {
+                        $('#subjects').append('<option value=' + item.Id + '>' + item.SubjectName + '</option>');
+                    });
+
+                });
+        });
+        
+
+        $("#subjects").click(function () {
+            var selectedSubject = $("#subjects").val();
+            $.get('@Url.Action("StudentsBySubject", "AspNetUser")',
+                { id: selectedSubject }, function (data) {
+
+                    $('#submission_table').html('');
+                    console.log(JSON.stringify(data));
+                    $.each(data, function (i, item) {
+
+                        $('#submission_table').append('<tr id=' + item.Id + '><td>' + item.Email + '</td><td>' + item.UserName + '</td><td>' + item.Name + '</td><td>' + item.PhoneNumber + '</td><td><a href="/AspNetUser/EditStudent/' + item.Id + '">Edit</a>' + '</td><td><a href="/AspNetUser/Details/' + item.Id + '">Detail</a>' + '</td><td><a href="/AspNetUser/Delete/' + item.Id + '">Delete</a></td></tr>');
+
+                    });
+
+                });
+        });
+    });
+
+</script>
+<div class="container">
+    <form>
+        <div class="form-group">
+            <lable class="col-md-2 control-label"><b>Select Class</b></lable>
+            <div class="col-md-10">
+                @Html.DropDownList("ClassID", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <br />
+            <label class="control-label col-md-2">Subjects</label>
+            <div class="col-md-10">
+                <select class="form-control" id="subjects" name="subjects" disabled></select>
+            </div>
+        </div>
+    </form>
+    <br />
+    <hr />
+    <hr>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Email
+                </th>
+                <th>
+                    User Name
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Phone Number
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="submission_table"></tbody>
+    </table>
+</div>

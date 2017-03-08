@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using SEA_Application.Models;
+using System.Transactions;
 
 namespace SEA_Application.Controllers
 {
@@ -62,35 +64,49 @@ namespace SEA_Application.Controllers
             IEnumerable<string> selectedsubjects = subjects.Split(',');
             if (ModelState.IsValid)
             {
-                // announcement.SubjectID=
-                db.AspNetAnnouncements.Add(aspNetAnnouncement);
-                db.SaveChanges();
-                int announcementID = db.AspNetAnnouncements.Max(item => item.Id);
-                List<int> SubjectIDs = new List<int>();
-                foreach (var item in selectedsubjects)
+                //var context = new BloggingContext();
+                var dbContextTransaction = db.Database.BeginTransaction();
+                try
+                    {
+                        //TransactionScope ts = new TransactionScope();
+                        // announcement.SubjectID=
+                        db.AspNetAnnouncements.Add(aspNetAnnouncement);
+                        db.SaveChanges();
+                        int announcementID = db.AspNetAnnouncements.Max(item => item.Id);
+                        List<int> SubjectIDs = new List<int>();
+                        foreach (var item in selectedsubjects)
+                        {
+                            int subjectID = Convert.ToInt32(item);
+                            SubjectIDs.Add(subjectID);
+                        }
+                        foreach (var item in SubjectIDs)
+                        {
+                            AspNetAnnouncement_Subject ann_sub = new AspNetAnnouncement_Subject();
+                            ann_sub.SubjectID = item;
+                            ann_sub.AnnouncementID = announcementID;
+                            db.AspNetAnnouncement_Subject.Add(ann_sub);
+                            db.SaveChanges();
+                        }
+                        List<string> student = db.AspNetStudent_Subject.Where(x => SubjectIDs.Contains(x.SubjectID)).Select(s => s.StudentID).ToList();
+                        foreach (var item in student)
+                        {
+
+                            AspNetStudent_Announcement stu_ann = new AspNetStudent_Announcement();
+                            stu_ann.StudentID = item;
+                            stu_ann.AnnouncementID = announcementID;
+                            stu_ann.Seen = false;
+                            db.AspNetStudent_Announcement.Add(stu_ann);
+                            db.SaveChanges();
+                        }
+                    dbContextTransaction.Commit();
+                        //ts.Complete();
+
+                    }
+                catch (Exception)
                 {
-                    int subjectID = Convert.ToInt32(item);
-                    SubjectIDs.Add(subjectID);
+                    dbContextTransaction.Dispose();
                 }
-                foreach (var item in SubjectIDs)
-                {
-                    AspNetAnnouncement_Subject ann_sub = new AspNetAnnouncement_Subject();
-                    ann_sub.SubjectID = item;
-                    ann_sub.AnnouncementID = announcementID;
-                    db.AspNetAnnouncement_Subject.Add(ann_sub);
-                    db.SaveChanges();
-                }
-                List<string> student = db.AspNetStudent_Subject.Where(x => SubjectIDs.Contains(x.SubjectID)).Select(s => s.StudentID).ToList();
-                foreach (var item in student)
-                {
-                   
-                    AspNetStudent_Announcement stu_ann = new AspNetStudent_Announcement();
-                    stu_ann.StudentID = item;
-                    stu_ann.AnnouncementID = announcementID;
-                    stu_ann.Seen = false;
-                    db.AspNetStudent_Announcement.Add(stu_ann);
-                    db.SaveChanges();
-                }
+            
                 return RedirectToAction("Index");
             }
 
@@ -121,8 +137,17 @@ namespace SEA_Application.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(aspNetAnnouncement).State = EntityState.Modified;
-                db.SaveChanges();
+                var dbContextTransaction = db.Database.BeginTransaction();
+                try
+                {
+                    db.Entry(aspNetAnnouncement).State = EntityState.Modified;
+                    db.SaveChanges();
+                    dbContextTransaction.Commit();
+                }
+                catch (Exception)
+                {
+                    dbContextTransaction.Dispose();
+                }
                 return RedirectToAction("Index");
             }
             return View(aspNetAnnouncement);
