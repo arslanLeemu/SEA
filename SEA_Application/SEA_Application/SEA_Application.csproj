@@ -362,6 +362,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\aspnet-SEA_Application-20170202034412.mdf" />
+    <Content Include="App_Data\aspnet-SEA_Application-20170202034412_log.ldf">
+      <DependentUpon>aspnet-SEA_Application-20170202034412.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Custom-Icon-Design-Pretty-Office-10-Teacher-male.ico" />
